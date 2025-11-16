@@ -1,8 +1,8 @@
 # SAPPDiscordBot
 
-![Java](https://img.shields.io/badge/Java-17%2B-orange)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
-![Version](https://img.shields.io/badge/Version-1.0.0-green)
+![Java](https://img.shields.io/badge/Java-17%2B-orange.svg)
+![License](https://img.shields.io/badge/License-MIT-blue.svg)
+![Halo Server Manager](https://img.shields.io/badge/Version-1.0.0-blue.svg)
 
 A powerful Java application that bridges Halo server events with Discord, providing real-time notifications and rich embeds for enhanced server monitoring and community engagement.
 
