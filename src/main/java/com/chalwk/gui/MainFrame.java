@@ -2,6 +2,7 @@ package com.chalwk.gui;
 
 import com.chalwk.SAPPDiscordBot;
 import com.chalwk.config.ConfigManager;
+import com.chalwk.util.UpdateChecker;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,6 +23,9 @@ public class MainFrame extends JFrame {
         this.configManager = configManager;
         initializeUI();
         setVisible(true);
+
+        // Check for updates when the app starts
+        checkForUpdatesOnStart();
     }
 
     private void initializeUI() {
@@ -55,8 +59,14 @@ public class MainFrame extends JFrame {
         viewMenu.add(refreshItem);
 
         JMenu helpMenu = new JMenu("Help");
+        JMenuItem checkUpdatesItem = new JMenuItem("Check for Updates");
+        checkUpdatesItem.addActionListener(e -> UpdateChecker.checkForUpdates(this));
+
         JMenuItem aboutItem = new JMenuItem("About");
         aboutItem.addActionListener(e -> showAboutDialog());
+
+        helpMenu.add(checkUpdatesItem);
+        helpMenu.addSeparator();
         helpMenu.add(aboutItem);
 
         menuBar.add(fileMenu);
@@ -121,7 +131,7 @@ public class MainFrame extends JFrame {
                 statusLabel.setForeground(Color.GREEN.darker());
                 startButton.setEnabled(false);
                 stopButton.setEnabled(true);
-                tabbedPane.setSelectedIndex(1); // Switch to event log when started
+                tabbedPane.setSelectedIndex(1); // Switch to the event log when started
             } else {
                 statusLabel.setText("Status: Stopped");
                 statusLabel.setForeground(Color.RED);
@@ -181,5 +191,12 @@ public class MainFrame extends JFrame {
         setVisible(true);
         setExtendedState(JFrame.NORMAL);
         toFront();
+    }
+
+    private void checkForUpdatesOnStart() {
+        // Check for updates after a short delay to ensure UI is fully loaded
+        Timer timer = new Timer(2000, e -> UpdateChecker.checkForUpdates(this));
+        timer.setRepeats(false);
+        timer.start();
     }
 }
