@@ -5,9 +5,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Properties;
 import java.util.Scanner;
 
 public class UpdateChecker {
@@ -19,6 +20,7 @@ public class UpdateChecker {
     private static final String APP_RELEASES_URL = "https://api.github.com/repos/Chalwk/SAPPDiscordBot/releases/latest";
 
     private static final String CURRENT_VERSION = "1.0.0";
+    private static final String UPDATE_CONFIG_FILE = "update_config.properties";
 
     public static void checkForUpdates(Component parent) {
         new Thread(() -> {
@@ -64,7 +66,30 @@ public class UpdateChecker {
     private static boolean checkScriptUpdate() throws IOException {
         try {
             String response = makeApiCall(SCRIPT_COMMITS_URL);
-            return response.contains("\"commit\"") && response.contains("\"author\"");
+
+            // Extract the latest commit SHA from response
+            String latestCommitSha = extractCommitShaFromResponse(response);
+            if (latestCommitSha == null) {
+                logger.warn("Could not extract commit SHA from response");
+                return false;
+            }
+
+            // Load stored commit SHA
+            String storedCommitSha = loadStoredCommitSha();
+
+            if (storedCommitSha == null) {
+                // First time running - store the current commit SHA but don't show as update
+                storeCommitSha(latestCommitSha);
+                return false;
+            } else {
+                // Compare with stored commit SHA
+                boolean isUpdated = !latestCommitSha.equals(storedCommitSha);
+
+                // Update stored commit SHA to the latest
+                storeCommitSha(latestCommitSha);
+
+                return isUpdated;
+            }
 
         } catch (IOException e) {
             logger.warn("Failed to check script updates", e);
@@ -77,7 +102,6 @@ public class UpdateChecker {
             String response = makeApiCall(APP_RELEASES_URL);
 
             // Extract the latest version from the response
-            // Look for "tag_name" in the JSON response
             if (response.contains("\"tag_name\"")) {
                 String versionTag = extractVersionFromResponse(response);
                 return !versionTag.equals(CURRENT_VERSION);
@@ -89,6 +113,22 @@ public class UpdateChecker {
             logger.warn("Failed to check app updates", e);
             throw e;
         }
+    }
+
+    private static String extractCommitShaFromResponse(String response) {
+        try {
+            // Look for "sha":"..." pattern in the commit response
+            int start = response.indexOf("\"sha\":\"") + 7;
+            if (start > 6) {
+                int end = response.indexOf("\"", start);
+                if (end > start) {
+                    return response.substring(start, end);
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to extract commit SHA from response", e);
+        }
+        return null;
     }
 
     private static String extractVersionFromResponse(String response) {
@@ -105,6 +145,28 @@ public class UpdateChecker {
         return CURRENT_VERSION; // Fallback to current version
     }
 
+    private static String loadStoredCommitSha() {
+        Properties props = new Properties();
+        try (InputStream input = new FileInputStream(UPDATE_CONFIG_FILE)) {
+            props.load(input);
+            return props.getProperty("last_commit_sha");
+        } catch (IOException e) {
+            // File doesn't exist yet - this is normal for first run
+            return null;
+        }
+    }
+
+    private static void storeCommitSha(String commitSha) {
+        Properties props = new Properties();
+        props.setProperty("last_commit_sha", commitSha);
+
+        try (OutputStream output = new FileOutputStream(UPDATE_CONFIG_FILE)) {
+            props.store(output, "Update Checker Configuration - Last known commit SHA for discord.lua");
+        } catch (IOException e) {
+            logger.warn("Failed to store commit SHA", e);
+        }
+    }
+
     private static String makeApiCall(String urlString) throws IOException {
         HttpURLConnection connection = null;
         try {
@@ -115,7 +177,7 @@ public class UpdateChecker {
             connection.setConnectTimeout(10000);
             connection.setReadTimeout(10000);
 
-            // Add User-Agent to comply with GitHub API requirements
+            // User-Agent to comply with GitHub API requirements
             connection.setRequestProperty("User-Agent", "SAPPDiscordBot/" + CURRENT_VERSION);
 
             int responseCode = connection.getResponseCode();

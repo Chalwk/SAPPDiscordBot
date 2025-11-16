@@ -41,3 +41,4 @@ build/
 .idea/
 .iml
 /sapp_bot_config.json
+/update_config.properties
