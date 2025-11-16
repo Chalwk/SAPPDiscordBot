@@ -14,9 +14,7 @@ public class EventLogPanel extends JPanel {
 
     private final EventTableModel tableModel;
     private final JTable eventTable;
-    private final JScrollPane scrollPane;
     private final JCheckBox autoScrollCheckbox;
-    private final JButton clearButton;
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
     public EventLogPanel() {
@@ -32,13 +30,13 @@ public class EventLogPanel extends JPanel {
         // Custom renderer for better appearance
         eventTable.setDefaultRenderer(Object.class, new EventLogCellRenderer());
 
-        scrollPane = new JScrollPane(eventTable);
+        JScrollPane scrollPane = new JScrollPane(eventTable);
         scrollPane.setPreferredSize(new Dimension(800, 400));
 
         // Control panel
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         autoScrollCheckbox = new JCheckBox("Auto-scroll", true);
-        clearButton = new JButton("Clear Log");
+        JButton clearButton = new JButton("Clear Log");
 
         clearButton.addActionListener(e -> clearLog());
 
@@ -49,9 +47,9 @@ public class EventLogPanel extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    public void addEvent(DiscordEvent event, String status) {
+    public void addEvent(DiscordEvent event, String serverName, String status) {
         SwingUtilities.invokeLater(() -> {
-            tableModel.addEvent(event, status);
+            tableModel.addEvent(event, serverName, status);
 
             // Auto-scroll to bottom if enabled
             if (autoScrollCheckbox.isSelected()) {
@@ -75,13 +73,15 @@ public class EventLogPanel extends JPanel {
 
     private static class EventLogEntry {
         String timestamp;
+        String serverName;
         String type;
         String channel;
         String content;
         String status;
 
-        EventLogEntry(DiscordEvent event, String status) {
+        EventLogEntry(DiscordEvent event, String serverName, String status) {
             this.timestamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
+            this.serverName = serverName;
             this.status = status;
 
             if (event.getMessage() != null) {
@@ -113,7 +113,7 @@ public class EventLogPanel extends JPanel {
             Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
             // Color code status column
-            if (column == 4 && value != null) {
+            if (column == 5 && value != null) {
                 String status = value.toString();
                 if (status.equalsIgnoreCase("success")) {
                     c.setForeground(Color.GREEN.darker());
@@ -128,12 +128,12 @@ public class EventLogPanel extends JPanel {
         }
     }
 
-    private class EventTableModel extends AbstractTableModel {
-        private final String[] columnNames = {"Time", "Type", "Channel", "Content", "Status"};
+    private static class EventTableModel extends AbstractTableModel {
+        private final String[] columnNames = {"Time", "Server", "Type", "Channel", "Content", "Status"};
         private final List<EventLogEntry> events = new ArrayList<>();
 
-        public void addEvent(DiscordEvent event, String status) {
-            events.add(new EventLogEntry(event, status));
+        public void addEvent(DiscordEvent event, String serverName, String status) {
+            events.add(new EventLogEntry(event, serverName, status));
             fireTableRowsInserted(events.size() - 1, events.size() - 1);
         }
 
@@ -165,10 +165,11 @@ public class EventLogPanel extends JPanel {
             EventLogEntry entry = events.get(rowIndex);
             return switch (columnIndex) {
                 case 0 -> entry.timestamp;
-                case 1 -> entry.type;
-                case 2 -> entry.channel;
-                case 3 -> entry.content;
-                case 4 -> entry.status;
+                case 1 -> entry.serverName;
+                case 2 -> entry.type;
+                case 3 -> entry.channel;
+                case 4 -> entry.content;
+                case 5 -> entry.status;
                 default -> "";
             };
         }

@@ -59,10 +59,4 @@ public class TrayManager {
             trayIcon.displayMessage("SAPP Discord Bot", message, TrayIcon.MessageType.INFO);
         }
     }
-
-    public void removeTrayIcon() {
-        if (trayIcon != null) {
-            SystemTray.getSystemTray().remove(trayIcon);
-        }
-    }
 }

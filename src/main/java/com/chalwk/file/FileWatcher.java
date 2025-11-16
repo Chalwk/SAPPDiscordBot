@@ -28,6 +28,7 @@ public class FileWatcher {
     private final ScheduledExecutorService scheduler;
     private final Map<String, FileState> fileStates;
     private boolean isWatching;
+    private EventListener eventListener;
 
     public FileWatcher(ConfigManager configManager, DiscordBot discordBot, EventProcessor eventProcessor) {
         this.configManager = configManager;
@@ -36,6 +37,10 @@ public class FileWatcher {
         this.jsonParser = new JSONParser();
         this.scheduler = Executors.newSingleThreadScheduledExecutor();
         this.fileStates = new HashMap<>();
+    }
+
+    public void setEventListener(EventListener listener) {
+        this.eventListener = listener;
     }
 
     public void startWatching() {
@@ -163,10 +168,11 @@ public class FileWatcher {
                 return; // No events to process
             }
 
+            // Extract server name from filename (remove .json extension)
+            String serverName = file.getName().replace(".json", "");
+
             List<DiscordEvent> eventsToProcess = new ArrayList<>();
 
-            // If we have no processed events, process all current events
-            // If we have processed events, only process new ones
             if (state.processedEventHashes.isEmpty()) {
                 eventsToProcess.addAll(allEvents);
                 logger.debug("Processing all {} events from file: {}", allEvents.size(), file.getName());
@@ -191,17 +197,23 @@ public class FileWatcher {
                 // Mark as successfully processed
                 state.processedEventHashes.add(eventHash);
 
+                // Notify UI with server name
+                if (eventListener != null) {
+                    eventListener.onEventProcessed(event, serverName);
+                }
+
                 logger.debug("Successfully processed event: {}", eventHash.substring(0, 8));
             }
 
             // Clear the file after processing all events
             if (!eventsToProcess.isEmpty()) {
                 clearFileAfterProcessing(file, state);
-                logger.info("Processed {} events and cleared file: {}", eventsToProcess.size(), file.getName());
+                logger.info("Processed {} events from server '{}' and cleared file", eventsToProcess.size(), serverName);
             }
 
         } catch (Exception e) {
             logger.error("Error processing new events from file: {}", file.getName(), e);
+            // Don't clear state on error to avoid losing track of processed events
         }
     }
 
@@ -263,6 +275,10 @@ public class FileWatcher {
             // Fallback to UUID
             return UUID.randomUUID().toString();
         }
+    }
+
+    public interface EventListener {
+        void onEventProcessed(DiscordEvent event, String serverName);
     }
 
     // Track state for each file

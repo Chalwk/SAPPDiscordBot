@@ -131,9 +131,9 @@ public class MainFrame extends JFrame {
         });
     }
 
-    public void addEventLog(com.chalwk.model.DiscordEvent event, String status) {
+    public void addEventLog(com.chalwk.model.DiscordEvent event, String serverName, String status) {
         if (eventLogPanel != null) {
-            eventLogPanel.addEvent(event, status);
+            eventLogPanel.addEvent(event, serverName, status);
         }
     }
 

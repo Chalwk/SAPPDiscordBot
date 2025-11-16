@@ -72,7 +72,7 @@ public class DiscordBot {
                 return false;
             }
 
-            // Split long messages to avoid Discord's 2000 character limit
+            // Split long messages to avoid Discord's 2000-character limit
             if (message.length() > 2000) {
                 message = message.substring(0, 1997) + "...";
             }
@@ -112,9 +112,5 @@ public class DiscordBot {
 
     public boolean isRunning() {
         return isRunning;
-    }
-
-    public JDA getJDA() {
-        return jda;
     }
 }

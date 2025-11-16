@@ -57,14 +57,14 @@ public class SAPPDiscordBot {
                 return;
             }
 
-            // Initialize event processor with UI listener
+            // Initialize event processor
             eventProcessor = new EventProcessor();
-            eventProcessor.setEventListener(event -> {
-                mainFrame.addEventLog(event, "Processed");
-            });
 
-            // Initialize file watcher
+            // Initialize file watcher with UI listener that includes server name
             fileWatcher = new FileWatcher(configManager, discordBot, eventProcessor);
+            fileWatcher.setEventListener((event, serverName) -> {
+                mainFrame.addEventLog(event, serverName, "Processed");
+            });
             fileWatcher.startWatching();
 
             mainFrame.updateStatus(true);
