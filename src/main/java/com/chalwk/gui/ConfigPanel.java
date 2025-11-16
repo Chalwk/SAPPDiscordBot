@@ -9,10 +9,11 @@ import java.awt.*;
 public class ConfigPanel extends JPanel {
 
     private final ConfigManager configManager;
-    private JTextField discordTokenField;
+    private JPasswordField discordTokenField; // Changed to JPasswordField
     private JTextField watchDirectoryField;
     private JCheckBox autoStartCheckbox;
     private JSpinner pollIntervalSpinner;
+    private JCheckBox showTokenCheckbox;
 
     public ConfigPanel(ConfigManager configManager) {
         this.configManager = configManager;
@@ -29,15 +30,21 @@ public class ConfigPanel extends JPanel {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Discord Token
+        // Discord Token with password field
         gbc.gridx = 0; gbc.gridy = 0;
         formPanel.add(new JLabel("Discord Bot Token:"), gbc);
         gbc.gridx = 1; gbc.gridwidth = 2;
-        discordTokenField = new JTextField(40);
+        discordTokenField = new JPasswordField(40);
         formPanel.add(discordTokenField, gbc);
 
+        // Show token checkbox
+        gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 3;
+        showTokenCheckbox = new JCheckBox("Show token");
+        showTokenCheckbox.addActionListener(e -> toggleTokenVisibility());
+        formPanel.add(showTokenCheckbox, gbc);
+
         // Watch Directory
-        gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 1;
+        gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 1;
         formPanel.add(new JLabel("Watch Directory:"), gbc);
         gbc.gridx = 1; gbc.gridwidth = 1;
         watchDirectoryField = new JTextField(30);
@@ -48,19 +55,19 @@ public class ConfigPanel extends JPanel {
         formPanel.add(browseButton, gbc);
 
         // Poll Interval
-        gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 1;
+        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 1;
         formPanel.add(new JLabel("Poll Interval (ms):"), gbc);
         gbc.gridx = 1; gbc.gridwidth = 2;
         pollIntervalSpinner = new JSpinner(new SpinnerNumberModel(1000, 100, 10000, 100));
         formPanel.add(pollIntervalSpinner, gbc);
 
         // Auto Start
-        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 3;
+        gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 3;
         autoStartCheckbox = new JCheckBox("Start bot automatically on application launch");
         formPanel.add(autoStartCheckbox, gbc);
 
         // Buttons
-        gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 3;
+        gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 3;
         JPanel buttonPanel = new JPanel(new FlowLayout());
         JButton saveButton = new JButton("Save Configuration");
         JButton resetButton = new JButton("Reset to Defaults");
@@ -73,6 +80,14 @@ public class ConfigPanel extends JPanel {
         formPanel.add(buttonPanel, gbc);
 
         add(formPanel, BorderLayout.NORTH);
+    }
+
+    private void toggleTokenVisibility() {
+        if (showTokenCheckbox.isSelected()) {
+            discordTokenField.setEchoChar((char) 0); // Show plain text
+        } else {
+            discordTokenField.setEchoChar('•'); // Show bullets
+        }
     }
 
     private void browseDirectory() {
@@ -95,7 +110,7 @@ public class ConfigPanel extends JPanel {
     private void saveConfig() {
         try {
             AppConfig config = new AppConfig();
-            config.setDiscordToken(discordTokenField.getText().trim());
+            config.setDiscordToken(new String(discordTokenField.getPassword()).trim()); // Use getPassword()
             config.setWatchDirectory(watchDirectoryField.getText().trim());
             config.setPollInterval((Integer) pollIntervalSpinner.getValue());
             config.setAutoStart(autoStartCheckbox.isSelected());
