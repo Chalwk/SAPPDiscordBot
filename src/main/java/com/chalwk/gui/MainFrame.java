@@ -169,7 +169,7 @@ public class MainFrame extends JFrame {
 
     private void showAboutDialog() {
         JOptionPane.showMessageDialog(this,
-                "SAPP Discord Bot v2.0\n\n" +
+                "SAPP Discord Bot v1.0.0\n\n" +
                         "Advanced Halo server event monitoring and Discord integration.\n" +
                         "Supports all event types including embeds with fields and colors.\n\n" +
                         "Copyright © 2025 Jericho Crosby (Chalwk)",
