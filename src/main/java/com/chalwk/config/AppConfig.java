@@ -7,15 +7,35 @@ public class AppConfig {
     private boolean autoStart = false;
 
     // Getters and setters
-    public String getDiscordToken() { return discordToken; }
-    public void setDiscordToken(String discordToken) { this.discordToken = discordToken; }
+    public String getDiscordToken() {
+        return discordToken;
+    }
 
-    public String getWatchDirectory() { return watchDirectory; }
-    public void setWatchDirectory(String watchDirectory) { this.watchDirectory = watchDirectory; }
+    public void setDiscordToken(String discordToken) {
+        this.discordToken = discordToken;
+    }
 
-    public int getPollInterval() { return pollInterval; }
-    public void setPollInterval(int pollInterval) { this.pollInterval = pollInterval; }
+    public String getWatchDirectory() {
+        return watchDirectory;
+    }
 
-    public boolean isAutoStart() { return autoStart; }
-    public void setAutoStart(boolean autoStart) { this.autoStart = autoStart; }
+    public void setWatchDirectory(String watchDirectory) {
+        this.watchDirectory = watchDirectory;
+    }
+
+    public int getPollInterval() {
+        return pollInterval;
+    }
+
+    public void setPollInterval(int pollInterval) {
+        this.pollInterval = pollInterval;
+    }
+
+    public boolean isAutoStart() {
+        return autoStart;
+    }
+
+    public void setAutoStart(boolean autoStart) {
+        this.autoStart = autoStart;
+    }
 }

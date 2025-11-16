@@ -6,12 +6,27 @@ public class EmbedField {
     private Boolean inline;
 
     // Getters and setters
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
 
-    public String getValue() { return value; }
-    public void setValue(String value) { this.value = value; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public Boolean getInline() { return inline; }
-    public void setInline(Boolean inline) { this.inline = inline; }
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public Boolean getInline() {
+        return inline;
+    }
+
+    public void setInline(Boolean inline) {
+        this.inline = inline;
+    }
 }

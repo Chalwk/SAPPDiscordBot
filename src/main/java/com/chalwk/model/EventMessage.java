@@ -7,9 +7,19 @@
      private String text;
 
      // Getters and setters
-     public String getChannel_id() { return channel_id; }
-     public void setChannel_id(String channel_id) { this.channel_id = channel_id; }
+     public String getChannel_id() {
+         return channel_id;
+     }
 
-     public String getText() { return text; }
-     public void setText(String text) { this.text = text; }
+     public void setChannel_id(String channel_id) {
+         this.channel_id = channel_id;
+     }
+
+     public String getText() {
+         return text;
+     }
+
+     public void setText(String text) {
+         this.text = text;
+     }
  }

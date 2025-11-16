@@ -6,12 +6,10 @@ import com.chalwk.discord.EventProcessor;
 import com.chalwk.file.FileWatcher;
 import com.chalwk.gui.MainFrame;
 import com.chalwk.gui.TrayManager;
-import com.chalwk.model.DiscordEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class SAPPDiscordBot {
 

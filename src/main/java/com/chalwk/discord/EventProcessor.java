@@ -1,9 +1,9 @@
 package com.chalwk.discord;
 
 import com.chalwk.model.DiscordEvent;
+import com.chalwk.model.EmbedField;
 import com.chalwk.model.EventEmbed;
 import com.chalwk.model.EventMessage;
-import com.chalwk.model.EmbedField;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.slf4j.Logger;
@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.time.Instant;
-import java.util.List;
 
 public class EventProcessor {
 

@@ -1,9 +1,9 @@
 package com.chalwk.file;
 
 import com.chalwk.model.DiscordEvent;
+import com.chalwk.model.EmbedField;
 import com.chalwk.model.EventEmbed;
 import com.chalwk.model.EventMessage;
-import com.chalwk.model.EmbedField;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;

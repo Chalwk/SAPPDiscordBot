@@ -158,44 +158,68 @@ public class FileWatcher {
     private void processNewEvents(File file, FileState state) {
         try {
             List<DiscordEvent> allEvents = jsonParser.parseEvents(file);
-            List<DiscordEvent> newEvents = new ArrayList<>();
 
-            // If file was cleared, or we have no state, process all events
-            if (allEvents.isEmpty() || state.processedEventHashes.isEmpty()) {
-                state.processedEventHashes.clear(); // Reset state
+            if (allEvents.isEmpty()) {
+                return; // No events to process
             }
 
-            // Filter out already processed events
-            for (DiscordEvent event : allEvents) {
-                String eventHash = generateEventHash(event);
-                if (!state.processedEventHashes.contains(eventHash)) {
-                    newEvents.add(event);
-                    state.processedEventHashes.add(eventHash);
-                    logger.debug("New event found: {}", eventHash.substring(0, 8));
-                } else {
-                    logger.debug("Skipping already processed event: {}", eventHash.substring(0, 8));
+            List<DiscordEvent> eventsToProcess = new ArrayList<>();
+
+            // If we have no processed events, process all current events
+            // If we have processed events, only process new ones
+            if (state.processedEventHashes.isEmpty()) {
+                eventsToProcess.addAll(allEvents);
+                logger.debug("Processing all {} events from file: {}", allEvents.size(), file.getName());
+            } else {
+                // Filter out already processed events
+                for (DiscordEvent event : allEvents) {
+                    String eventHash = generateEventHash(event);
+                    if (!state.processedEventHashes.contains(eventHash)) {
+                        eventsToProcess.add(event);
+                        logger.debug("New event found: {}", eventHash.substring(0, 8));
+                    }
                 }
             }
 
-            // Process new events
-            for (DiscordEvent event : newEvents) {
+            // Process events and track successful ones
+            for (DiscordEvent event : eventsToProcess) {
+                String eventHash = generateEventHash(event);
+
+                // Process the event
                 eventProcessor.processEvent(event, discordBot);
+
+                // Mark as successfully processed
+                state.processedEventHashes.add(eventHash);
+
+                logger.debug("Successfully processed event: {}", eventHash.substring(0, 8));
             }
 
-            // Log processing summary
-            if (!newEvents.isEmpty()) {
-                logger.info("Processed {} new events from file: {}", newEvents.size(), file.getName());
+            // Clear the file after processing all events
+            if (!eventsToProcess.isEmpty()) {
+                clearFileAfterProcessing(file, state);
+                logger.info("Processed {} events and cleared file: {}", eventsToProcess.size(), file.getName());
             }
-
-            state.lastProcessedCount = newEvents.size();
-
-            // Clean up old hashes periodically
-            cleanupOldHashes(state, allEvents.size());
 
         } catch (Exception e) {
             logger.error("Error processing new events from file: {}", file.getName(), e);
-            // Reset state on error to avoid persistent issues
-            state.processedEventHashes.clear();
+        }
+    }
+
+    // Clear file but maintain state of processed events
+    private void clearFileAfterProcessing(File file, FileState state) {
+        try {
+            // Clear the physical file
+            java.io.FileWriter writer = new java.io.FileWriter(file);
+            writer.write("[]");
+            writer.close();
+
+            // Update file state
+            state.lastModified = file.lastModified();
+            state.fileSize = file.length();
+
+            logger.debug("File cleared after processing: {}", file.getName());
+        } catch (Exception e) {
+            logger.error("Failed to clear file after processing: {}", file.getName(), e);
         }
     }
 
@@ -224,9 +248,7 @@ public class FileWatcher {
                 }
             }
 
-            // Add timestamp to prevent identical events from having same hash
-            content.append(System.currentTimeMillis());
-
+            // Use a consistent hash without timestamp to ensure same events have same hash
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(content.toString().getBytes());
 
@@ -241,19 +263,6 @@ public class FileWatcher {
             // Fallback to UUID
             return UUID.randomUUID().toString();
         }
-    }
-
-    private void cleanupOldHashes(FileState state, int currentEventCount) {
-        // If we have too many stored hashes, clear them and start fresh
-        // This prevents memory leaks if files grow very large
-        if (state.processedEventHashes.size() > 1000) { // Adjust threshold as needed
-            logger.debug("Cleaning up old event hashes, stored: {}", state.processedEventHashes.size());
-            state.processedEventHashes.clear();
-        }
-    }
-
-    public boolean isWatching() {
-        return isWatching;
     }
 
     // Track state for each file

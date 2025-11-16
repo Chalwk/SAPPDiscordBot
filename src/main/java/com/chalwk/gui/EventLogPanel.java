@@ -1,8 +1,6 @@
 package com.chalwk.gui;
 
 import com.chalwk.model.DiscordEvent;
-import com.chalwk.model.EventEmbed;
-import com.chalwk.model.EventMessage;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -75,52 +73,6 @@ public class EventLogPanel extends JPanel {
         });
     }
 
-    private class EventTableModel extends AbstractTableModel {
-        private final String[] columnNames = {"Time", "Type", "Channel", "Content", "Status"};
-        private final List<EventLogEntry> events = new ArrayList<>();
-
-        public void addEvent(DiscordEvent event, String status) {
-            events.add(new EventLogEntry(event, status));
-            fireTableRowsInserted(events.size() - 1, events.size() - 1);
-        }
-
-        public void clearEvents() {
-            int size = events.size();
-            events.clear();
-            fireTableRowsDeleted(0, size - 1);
-        }
-
-        @Override
-        public int getRowCount() {
-            return events.size();
-        }
-
-        @Override
-        public int getColumnCount() {
-            return columnNames.length;
-        }
-
-        @Override
-        public String getColumnName(int column) {
-            return columnNames[column];
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            if (rowIndex >= events.size()) return "";
-
-            EventLogEntry entry = events.get(rowIndex);
-            return switch (columnIndex) {
-                case 0 -> entry.timestamp;
-                case 1 -> entry.type;
-                case 2 -> entry.channel;
-                case 3 -> entry.content;
-                case 4 -> entry.status;
-                default -> "";
-            };
-        }
-    }
-
     private static class EventLogEntry {
         String timestamp;
         String type;
@@ -173,6 +125,52 @@ public class EventLogPanel extends JPanel {
             }
 
             return c;
+        }
+    }
+
+    private class EventTableModel extends AbstractTableModel {
+        private final String[] columnNames = {"Time", "Type", "Channel", "Content", "Status"};
+        private final List<EventLogEntry> events = new ArrayList<>();
+
+        public void addEvent(DiscordEvent event, String status) {
+            events.add(new EventLogEntry(event, status));
+            fireTableRowsInserted(events.size() - 1, events.size() - 1);
+        }
+
+        public void clearEvents() {
+            int size = events.size();
+            events.clear();
+            fireTableRowsDeleted(0, size - 1);
+        }
+
+        @Override
+        public int getRowCount() {
+            return events.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return columnNames[column];
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            if (rowIndex >= events.size()) return "";
+
+            EventLogEntry entry = events.get(rowIndex);
+            return switch (columnIndex) {
+                case 0 -> entry.timestamp;
+                case 1 -> entry.type;
+                case 2 -> entry.channel;
+                case 3 -> entry.content;
+                case 4 -> entry.status;
+                default -> "";
+            };
         }
     }
 }
