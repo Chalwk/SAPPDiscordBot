@@ -12,8 +12,8 @@ import java.util.Map;
 public class OutputConfigPanel extends JPanel {
 
     private final ConfigManager configManager;
-    private final Map<String, ServerChannelPanel> serverPanels;
-    private JTabbedPane channelTabs;
+    private final Map<String, ServerConfigPanel> serverPanels;
+    private JTabbedPane configTabs;
     private JComboBox<String> serverSelector;
 
     // Global channel fields
@@ -35,17 +35,17 @@ public class OutputConfigPanel extends JPanel {
         // Server management panel
         JPanel serverManagementPanel = createServerManagementPanel();
 
-        // Channel tabs
-        channelTabs = new JTabbedPane();
+        // Configuration tabs
+        configTabs = new JTabbedPane();
 
         // Global channels tab (for default/fallback)
-        channelTabs.addTab("Global Channels", createGlobalChannelsPanel());
+        configTabs.addTab("Global Configuration", createGlobalConfigPanel());
 
         // Buttons Panel
         JPanel buttonPanel = createButtonPanel();
 
         add(serverManagementPanel, BorderLayout.NORTH);
-        add(channelTabs, BorderLayout.CENTER);
+        add(configTabs, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
@@ -71,18 +71,34 @@ public class OutputConfigPanel extends JPanel {
         return panel;
     }
 
+    private JPanel createGlobalConfigPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        // Global channels configuration
+        JPanel channelsPanel = createGlobalChannelsPanel();
+
+        // Global event templates
+        JPanel templatesPanel = new EventTemplatesSection("Global", configManager.getConfig().getEventConfigs());
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, channelsPanel, templatesPanel);
+        splitPane.setResizeWeight(0.3); // Give more space to templates
+        splitPane.setDividerLocation(200);
+
+        panel.add(splitPane, BorderLayout.CENTER);
+        return panel;
+    }
+
     private JPanel createGlobalChannelsPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        panel.setBorder(BorderFactory.createTitledBorder("Global Channels (Fallback)"));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Global channels configuration
-        JLabel helpLabel = new JLabel("<html><b>Global Channels (Fallback):</b><br>" +
-                "These channels will be used when no server-specific channels are configured.</html>");
+        JLabel helpLabel = new JLabel("<html>These channels will be used when no server-specific channels are configured.</html>");
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
@@ -127,8 +143,8 @@ public class OutputConfigPanel extends JPanel {
         return panel;
     }
 
-    private ServerChannelPanel createServerChannelsPanel(String serverName) {
-        ServerChannelPanel panel = new ServerChannelPanel(serverName);
+    private ServerConfigPanel createServerConfigPanel(String serverName) {
+        ServerConfigPanel panel = new ServerConfigPanel(serverName, configManager);
         serverPanels.put(serverName, panel);
         return panel;
     }
@@ -179,7 +195,7 @@ public class OutputConfigPanel extends JPanel {
                         addServerTab(serverName);
                     }
 
-                    ServerChannelPanel panel = serverPanels.get(serverName);
+                    ServerConfigPanel panel = serverPanels.get(serverName);
                     switch (channelType) {
                         case "GENERAL" -> panel.getGeneralField().setText(config.getChannels().get(key));
                         case "CHAT" -> panel.getChatField().setText(config.getChannels().get(key));
@@ -202,19 +218,22 @@ public class OutputConfigPanel extends JPanel {
             config.getChannels().put("COMMAND", globalCommandField.getText().trim());
 
             // Save server-specific channels
-            for (Map.Entry<String, ServerChannelPanel> entry : serverPanels.entrySet()) {
+            for (Map.Entry<String, ServerConfigPanel> entry : serverPanels.entrySet()) {
                 String serverName = entry.getKey();
-                ServerChannelPanel panel = entry.getValue();
+                ServerConfigPanel panel = entry.getValue();
 
                 config.getChannels().put(serverName + "_GENERAL", panel.getGeneralField().getText().trim());
                 config.getChannels().put(serverName + "_CHAT", panel.getChatField().getText().trim());
                 config.getChannels().put(serverName + "_COMMAND", panel.getCommandField().getText().trim());
+
+                // Save server-specific event templates
+                panel.saveEventTemplates();
             }
 
             configManager.saveConfig(config);
-            JOptionPane.showMessageDialog(this, "Configuration saved!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Configuration saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error saving: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error saving configuration: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -236,7 +255,7 @@ public class OutputConfigPanel extends JPanel {
         String selectedServer = (String) serverSelector.getSelectedItem();
         if (selectedServer != null && !selectedServer.equals("Global")) {
             int result = JOptionPane.showConfirmDialog(this,
-                    "Remove server '" + selectedServer + "' and all its channel configurations?",
+                    "Remove server '" + selectedServer + "' and all its configurations?",
                     "Confirm Removal", JOptionPane.YES_NO_OPTION);
 
             if (result == JOptionPane.YES_OPTION) {
@@ -247,15 +266,15 @@ public class OutputConfigPanel extends JPanel {
     }
 
     private void addServerTab(String serverName) {
-        ServerChannelPanel panel = createServerChannelsPanel(serverName);
-        channelTabs.addTab(serverName, panel);
+        ServerConfigPanel panel = createServerConfigPanel(serverName);
+        configTabs.addTab(serverName, panel);
         serverPanels.put(serverName, panel);
     }
 
     private void removeServerTab(String serverName) {
-        ServerChannelPanel panel = serverPanels.remove(serverName);
+        ServerConfigPanel panel = serverPanels.remove(serverName);
         if (panel != null) {
-            channelTabs.remove(panel);
+            configTabs.remove(panel);
         }
     }
 
@@ -271,12 +290,12 @@ public class OutputConfigPanel extends JPanel {
         String selected = (String) serverSelector.getSelectedItem();
         if (selected != null) {
             if (selected.equals("Global")) {
-                channelTabs.setSelectedIndex(0);
+                configTabs.setSelectedIndex(0);
             } else {
                 // Find the tab index for this server
-                for (int i = 1; i < channelTabs.getTabCount(); i++) {
-                    if (channelTabs.getTitleAt(i).equals(selected)) {
-                        channelTabs.setSelectedIndex(i);
+                for (int i = 1; i < configTabs.getTabCount(); i++) {
+                    if (configTabs.getTitleAt(i).equals(selected)) {
+                        configTabs.setSelectedIndex(i);
                         break;
                     }
                 }
@@ -286,7 +305,7 @@ public class OutputConfigPanel extends JPanel {
 
     private void resetConfig() {
         int result = JOptionPane.showConfirmDialog(this,
-                "Are you sure you want to reset output configuration to defaults? This will reset all channel IDs.",
+                "Are you sure you want to reset all configuration to defaults? This will reset all channel IDs and event templates.",
                 "Confirm Reset",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE);
@@ -308,7 +327,7 @@ public class OutputConfigPanel extends JPanel {
                 loadConfig();
 
                 JOptionPane.showMessageDialog(this,
-                        "Output configuration reset to defaults!",
+                        "Configuration reset to defaults!",
                         "Reset Complete",
                         JOptionPane.INFORMATION_MESSAGE);
 
@@ -321,36 +340,54 @@ public class OutputConfigPanel extends JPanel {
         }
     }
 
-    // Custom panel for server channels
-    private static class ServerChannelPanel extends JPanel {
+    // Custom panel for server configuration (channels + event templates)
+    private static class ServerConfigPanel extends JPanel {
         private final String serverName;
+        private final ConfigManager configManager;
         private JTextField generalField;
         private JTextField chatField;
         private JTextField commandField;
+        private EventTemplatesSection templatesSection;
 
-        public ServerChannelPanel(String serverName) {
+        public ServerConfigPanel(String serverName, ConfigManager configManager) {
             this.serverName = serverName;
+            this.configManager = configManager;
             initializeUI();
         }
 
         private void initializeUI() {
-            setLayout(new GridBagLayout());
+            setLayout(new BorderLayout());
             setBorder(new EmptyBorder(10, 10, 10, 10));
+
+            // Server header
+            JLabel headerLabel = new JLabel("<html><b>Server: " + serverName + "</b><br>" +
+                    "Configure Discord channels and event templates specifically for this Halo server.</html>");
+            headerLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+            add(headerLabel, BorderLayout.NORTH);
+
+            // Create channels panel
+            JPanel channelsPanel = createChannelsPanel();
+
+            // Create event templates section
+            templatesSection = new EventTemplatesSection(serverName, configManager.getConfig().getEventConfigs());
+
+            // Use split pane to divide channels and templates
+            JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, channelsPanel, templatesSection);
+            splitPane.setResizeWeight(0.3); // Give more space to templates
+            splitPane.setDividerLocation(150);
+
+            add(splitPane, BorderLayout.CENTER);
+        }
+
+        private JPanel createChannelsPanel() {
+            JPanel panel = new JPanel(new GridBagLayout());
+            panel.setBorder(BorderFactory.createTitledBorder("Channel Configuration"));
 
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.insets = new Insets(5, 5, 5, 5);
             gbc.anchor = GridBagConstraints.WEST;
             gbc.fill = GridBagConstraints.HORIZONTAL;
 
-            // Server header
-            JLabel headerLabel = new JLabel("<html><b>Server: " + serverName + "</b><br>" +
-                    "Configure Discord channels specifically for this Halo server.</html>");
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.gridwidth = 2;
-            add(headerLabel, gbc);
-
-            // Channel fields
             String[] channelLabels = {"General Channel ID:", "Chat Channel ID:", "Command Channel ID:"};
             String[] channelHelp = {
                     "Channel for game events (joins, deaths, scores) - overrides global setting",
@@ -359,14 +396,14 @@ public class OutputConfigPanel extends JPanel {
             };
 
             for (int i = 0; i < channelLabels.length; i++) {
-                gbc.gridy = i * 2 + 1;
+                gbc.gridy = i * 2;
                 gbc.gridx = 0;
                 gbc.gridwidth = 1;
-                add(new JLabel(channelLabels[i]), gbc);
+                panel.add(new JLabel(channelLabels[i]), gbc);
 
                 gbc.gridx = 1;
                 JTextField field = new JTextField(30);
-                add(field, gbc);
+                panel.add(field, gbc);
 
                 // Store references
                 switch (i) {
@@ -376,16 +413,22 @@ public class OutputConfigPanel extends JPanel {
                 }
 
                 // Help text
-                gbc.gridy = i * 2 + 2;
+                gbc.gridy = i * 2 + 1;
                 gbc.gridx = 1;
-                gbc.insets = new Insets(0, 5, 10, 5);
+                gbc.insets = new Insets(0, 5, 5, 5);
                 JLabel help = new JLabel("<html><i>" + channelHelp[i] + "</i></html>");
                 help.setForeground(Color.GRAY);
                 help.setFont(help.getFont().deriveFont(10f));
-                add(help, gbc);
+                panel.add(help, gbc);
 
                 gbc.insets = new Insets(5, 5, 5, 5); // reset
             }
+
+            return panel;
+        }
+
+        public void saveEventTemplates() {
+            templatesSection.saveToConfig(configManager.getConfig().getEventConfigs());
         }
 
         // Getters

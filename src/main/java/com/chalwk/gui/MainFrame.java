@@ -76,6 +76,7 @@ public class MainFrame extends JFrame {
         configPanel = new ConfigPanel(configManager);
         tabbedPane.addTab("Bot Configuration", configPanel);
 
+        // Output Configuration tab
         OutputConfigPanel outputConfigPanel = new OutputConfigPanel(configManager);
         tabbedPane.addTab("Output Configuration", outputConfigPanel);
 
