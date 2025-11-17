@@ -5,11 +5,16 @@ import com.chalwk.config.EventConfig;
 import com.chalwk.model.RawEvent;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.time.Instant;
 
 public class EventProcessor {
+
+    private static final Logger logger = LoggerFactory.getLogger(EventProcessor.class);
+
     private final ConfigManager configManager;
     private EventListener eventListener;
 
@@ -23,10 +28,18 @@ public class EventProcessor {
 
     public void processRawEvent(RawEvent rawEvent, DiscordBot discordBot) {
         String eventType = rawEvent.getEvent_type();
-        EventConfig eventConfig = configManager.getConfig().getEventConfigs().get(eventType);
+        String subtype = rawEvent.getSubtype();
+
+        String configKey = eventType;
+        if (subtype != null && !subtype.isEmpty()) {
+            configKey = eventType + "_" + subtype;
+        }
+
+        EventConfig eventConfig = configManager.getConfig().getEventConfigs().get(configKey);
 
         if (eventConfig == null || !eventConfig.isEnabled()) {
-            return; // Event not configured or disabled
+            logger.debug("Event not configured or disabled: {}", configKey);
+            return;
         }
 
         // Get actual channel ID from channel mapping
