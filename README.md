@@ -4,7 +4,8 @@
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Halo Server Manager](https://img.shields.io/badge/Version-1.0.0-blue.svg)
 
-A powerful Java application that bridges Halo server events with Discord, providing real-time notifications and rich embeds for enhanced server monitoring and community engagement.
+A powerful Java application that bridges Halo server events with Discord, providing real-time notifications and rich
+embeds for enhanced server monitoring and community engagement.
 
 ## Features
 
@@ -33,7 +34,8 @@ A powerful Java application that bridges Halo server events with Discord, provid
 3. Run `SAPPDiscordBot.exe` to launch the application
 4. Configure your Discord Bot Token in the Configuration tab
 5. Set your watch directory (default: `./discord_events`)
-6. Download the required Lua script from [HALO-SCRIPT-PROJECTS](https://github.com/Chalwk/HALO-SCRIPT-PROJECTS/blob/master/sapp/utility/discord.lua)
+6. Download the required Lua script
+   from [HALO-SCRIPT-PROJECTS](https://github.com/Chalwk/HALO-SCRIPT-PROJECTS/blob/master/sapp/utility/discord.lua)
 
 ### Configuration
 
@@ -54,7 +56,8 @@ A powerful Java application that bridges Halo server events with Discord, provid
 
 3. **Setup Lua Script**
 
-    * Download `discord.lua` from [HALO-SCRIPT-PROJECTS](https://github.com/Chalwk/HALO-SCRIPT-PROJECTS/blob/master/sapp/utility/discord.lua)
+    * Download `discord.lua`
+      from [HALO-SCRIPT-PROJECTS](https://github.com/Chalwk/HALO-SCRIPT-PROJECTS/blob/master/sapp/utility/discord.lua)
     * Install on your Halo server
     * Configure it to write JSON events to the watch directory
 
@@ -184,6 +187,7 @@ Bug reports and feature suggestions are welcome.
 
 ### Bug Reports and Feature Requests
 
-Found a bug or have a feature request? Please create an [issue](https://github.com/Chalwk/SAPPDiscordBot/issues) on GitHub.
+Found a bug or have a feature request? Please create an [issue](https://github.com/Chalwk/SAPPDiscordBot/issues) on
+GitHub.
 
 ---

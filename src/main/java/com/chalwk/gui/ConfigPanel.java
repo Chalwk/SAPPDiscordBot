@@ -4,12 +4,15 @@ import com.chalwk.config.AppConfig;
 import com.chalwk.config.ConfigManager;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.io.File;
 
 public class ConfigPanel extends JPanel {
 
     private final ConfigManager configManager;
-    private JPasswordField discordTokenField; // Changed to JPasswordField
+    private JPasswordField discordTokenField;
     private JTextField watchDirectoryField;
     private JCheckBox autoStartCheckbox;
     private JSpinner pollIntervalSpinner;
@@ -23,90 +26,165 @@ public class ConfigPanel extends JPanel {
 
     private void initializeUI() {
         setLayout(new BorderLayout());
+        setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        JPanel formPanel = new JPanel(new GridBagLayout());
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel.setBorder(BorderFactory.createCompoundBorder(
+                new TitledBorder("Bot Configuration"),
+                new EmptyBorder(5, 5, 5, 5)
+        ));
+
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.insets = new Insets(8, 8, 8, 8);
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Discord Token with password field
+        // Discord Token Section
         gbc.gridx = 0;
         gbc.gridy = 0;
-        formPanel.add(new JLabel("Discord Bot Token:"), gbc);
+        gbc.gridwidth = 1;
+        JLabel tokenLabel = new JLabel("Discord Bot Token:");
+        tokenLabel.setFont(tokenLabel.getFont().deriveFont(Font.BOLD));
+        mainPanel.add(tokenLabel, gbc);
+
         gbc.gridx = 1;
         gbc.gridwidth = 2;
         discordTokenField = new JPasswordField(40);
-        formPanel.add(discordTokenField, gbc);
+        mainPanel.add(discordTokenField, gbc);
 
-        // Show token checkbox
-        gbc.gridx = 0;
+        // Token checkbox
         gbc.gridy = 1;
-        gbc.gridwidth = 3;
+        gbc.gridx = 1;
+        gbc.gridwidth = 2;
         showTokenCheckbox = new JCheckBox("Show token");
         showTokenCheckbox.addActionListener(e -> toggleTokenVisibility());
-        formPanel.add(showTokenCheckbox, gbc);
+        mainPanel.add(showTokenCheckbox, gbc);
 
-        // Watch Directory
-        gbc.gridx = 0;
+        // Token help text
         gbc.gridy = 2;
-        gbc.gridwidth = 1;
-        formPanel.add(new JLabel("Watch Directory:"), gbc);
-        gbc.gridx = 1;
-        gbc.gridwidth = 1;
-        watchDirectoryField = new JTextField(30);
-        formPanel.add(watchDirectoryField, gbc);
-        gbc.gridx = 2;
-        JButton browseButton = new JButton("Browse");
-        browseButton.addActionListener(e -> browseDirectory());
-        formPanel.add(browseButton, gbc);
+        gbc.insets = new Insets(2, 8, 8, 8);
+        JLabel tokenHelp = new JLabel("<html><i>Get this from Discord Developer Portal → Your Bot → Token</i></html>");
+        tokenHelp.setForeground(Color.GRAY);
+        tokenHelp.setFont(tokenHelp.getFont().deriveFont(10f));
+        mainPanel.add(tokenHelp, gbc);
 
-        // Poll Interval
+        // Watch Directory Section
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.gridwidth = 1;
-        formPanel.add(new JLabel("Poll Interval (ms):"), gbc);
+        gbc.insets = new Insets(8, 8, 8, 8); // reset to default
+        JLabel watchDirLabel = new JLabel("Watch Directory:");
+        watchDirLabel.setFont(watchDirLabel.getFont().deriveFont(Font.BOLD));
+        mainPanel.add(watchDirLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridwidth = 1;
+        watchDirectoryField = new JTextField(30);
+        mainPanel.add(watchDirectoryField, gbc);
+
+        gbc.gridx = 2;
+        JButton browseButton = new JButton("Browse");
+        browseButton.setBackground(new Color(70, 130, 180));
+        browseButton.setForeground(Color.BLACK);
+        browseButton.addActionListener(e -> browseDirectory());
+        mainPanel.add(browseButton, gbc);
+
+        // Watch directory help text
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(2, 8, 8, 8);
+        JLabel watchDirHelp = new JLabel("<html><i>Directory where Halo server JSON event files are written. Each server should have its own JSON file.</i></html>");
+        watchDirHelp.setForeground(Color.GRAY);
+        watchDirHelp.setFont(watchDirHelp.getFont().deriveFont(10f));
+        mainPanel.add(watchDirHelp, gbc);
+
+        // Poll Interval Section
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 1;
+        gbc.insets = new Insets(8, 8, 8, 8); // reset
+        JLabel pollLabel = new JLabel("Poll Interval (ms):");
+        pollLabel.setFont(pollLabel.getFont().deriveFont(Font.BOLD));
+        mainPanel.add(pollLabel, gbc);
+
         gbc.gridx = 1;
         gbc.gridwidth = 2;
         pollIntervalSpinner = new JSpinner(new SpinnerNumberModel(1000, 100, 10000, 100));
-        formPanel.add(pollIntervalSpinner, gbc);
+        mainPanel.add(pollIntervalSpinner, gbc);
+
+        // Poll interval help text
+        gbc.gridy = 6;
+        gbc.insets = new Insets(2, 8, 8, 8);
+        JLabel pollHelp = new JLabel("<html><i>How often to check for new events (lower = faster detection, higher = less CPU usage)</i></html>");
+        pollHelp.setForeground(Color.GRAY);
+        pollHelp.setFont(pollHelp.getFont().deriveFont(10f));
+        mainPanel.add(pollHelp, gbc);
 
         // Auto Start
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 7;
         gbc.gridwidth = 3;
+        gbc.insets = new Insets(8, 8, 8, 8); // reset
         autoStartCheckbox = new JCheckBox("Start bot automatically on application launch");
-        formPanel.add(autoStartCheckbox, gbc);
+        autoStartCheckbox.setFont(autoStartCheckbox.getFont().deriveFont(Font.BOLD));
+        mainPanel.add(autoStartCheckbox, gbc);
 
-        // Buttons
+        // Buttons Panel
         gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridy = 8;
         gbc.gridwidth = 3;
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-        JButton saveButton = new JButton("Save Configuration");
-        JButton resetButton = new JButton("Reset to Defaults");
+        gbc.anchor = GridBagConstraints.CENTER;
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 15));
+
+        JButton saveButton = createStyledButton("Save Configuration", new Color(46, 125, 50));
+        JButton resetButton = createStyledButton("Reset to Defaults", new Color(198, 40, 40));
+
+        saveButton.setForeground(Color.BLACK);
+        resetButton.setForeground(Color.BLACK);
 
         saveButton.addActionListener(e -> saveConfig());
         resetButton.addActionListener(e -> resetConfig());
 
         buttonPanel.add(saveButton);
         buttonPanel.add(resetButton);
-        formPanel.add(buttonPanel, gbc);
+        mainPanel.add(buttonPanel, gbc);
 
-        add(formPanel, BorderLayout.NORTH);
+        add(mainPanel, BorderLayout.NORTH);
+    }
+
+    private JButton createStyledButton(String text, Color bgColor) {
+        JButton button = new JButton(text);
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setFont(button.getFont().deriveFont(Font.BOLD));
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(bgColor.darker()),
+                BorderFactory.createEmptyBorder(8, 15, 8, 15)
+        ));
+        return button;
     }
 
     private void toggleTokenVisibility() {
         if (showTokenCheckbox.isSelected()) {
-            discordTokenField.setEchoChar((char) 0); // Show plain text
+            discordTokenField.setEchoChar((char) 0);
         } else {
-            discordTokenField.setEchoChar('•'); // Show bullets
+            discordTokenField.setEchoChar('•');
         }
     }
 
     private void browseDirectory() {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setDialogTitle("Select Watch Directory");
+
+        // Start from current watch directory if it exists
+        String currentDir = watchDirectoryField.getText();
+        if (currentDir != null && !currentDir.trim().isEmpty()) {
+            chooser.setCurrentDirectory(new File(currentDir));
+        }
+
         int result = chooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             watchDirectoryField.setText(chooser.getSelectedFile().getAbsolutePath());
@@ -124,15 +202,21 @@ public class ConfigPanel extends JPanel {
     private void saveConfig() {
         try {
             AppConfig config = new AppConfig();
-            config.setDiscordToken(new String(discordTokenField.getPassword()).trim()); // Use getPassword()
+            config.setDiscordToken(new String(discordTokenField.getPassword()).trim());
             config.setWatchDirectory(watchDirectoryField.getText().trim());
             config.setPollInterval((Integer) pollIntervalSpinner.getValue());
             config.setAutoStart(autoStartCheckbox.isSelected());
 
             configManager.saveConfig(config);
-            JOptionPane.showMessageDialog(this, "Configuration saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Configuration saved successfully!",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error saving configuration: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Error saving configuration: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -140,7 +224,8 @@ public class ConfigPanel extends JPanel {
         int result = JOptionPane.showConfirmDialog(this,
                 "Are you sure you want to reset all settings to defaults?",
                 "Confirm Reset",
-                JOptionPane.YES_NO_OPTION);
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
 
         if (result == JOptionPane.YES_OPTION) {
             configManager.resetToDefaults();

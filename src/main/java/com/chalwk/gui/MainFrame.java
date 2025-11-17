@@ -2,6 +2,7 @@ package com.chalwk.gui;
 
 import com.chalwk.SAPPDiscordBot;
 import com.chalwk.config.ConfigManager;
+import com.chalwk.model.DiscordEvent;
 import com.chalwk.util.UpdateChecker;
 
 import javax.swing.*;
@@ -23,8 +24,6 @@ public class MainFrame extends JFrame {
         this.configManager = configManager;
         initializeUI();
         setVisible(true);
-
-        // Check for updates when the app starts
         checkForUpdatesOnStart();
     }
 
@@ -141,7 +140,7 @@ public class MainFrame extends JFrame {
         });
     }
 
-    public void addEventLog(com.chalwk.model.DiscordEvent event, String serverName, String status) {
+    public void addEventLog(DiscordEvent event, String serverName, String status) {
         if (eventLogPanel != null) {
             eventLogPanel.addEvent(event, serverName, status);
         }
@@ -155,7 +154,7 @@ public class MainFrame extends JFrame {
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private void confirmExit() {
+    public void confirmExit() {
         int result = JOptionPane.showConfirmDialog(this,
                 "Are you sure you want to exit?",
                 "Confirm Exit",
@@ -195,7 +194,7 @@ public class MainFrame extends JFrame {
 
     private void checkForUpdatesOnStart() {
         // Check for updates after a short delay to ensure UI is fully loaded
-        Timer timer = new Timer(2000, e -> UpdateChecker.checkForUpdates(this));
+        Timer timer = new Timer(2000, e -> UpdateChecker.checkForUpdatesSilent(this));
         timer.setRepeats(false);
         timer.start();
     }

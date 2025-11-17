@@ -3,7 +3,9 @@ package com.chalwk.gui;
 import com.chalwk.model.DiscordEvent;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,23 +26,50 @@ public class EventLogPanel extends JPanel {
         // Create table model and table
         tableModel = new EventTableModel();
         eventTable = new JTable(tableModel);
-        eventTable.setAutoCreateRowSorter(true);
+
+        // Enhanced table styling
         eventTable.setFillsViewportHeight(true);
+        eventTable.setRowHeight(25);
+        eventTable.setShowGrid(true);
+        eventTable.setGridColor(new Color(240, 240, 240));
+        eventTable.setSelectionBackground(new Color(220, 240, 255));
+        eventTable.setSelectionForeground(Color.BLACK);
+        eventTable.setFont(eventTable.getFont().deriveFont(12f));
+
+        // Header styling
+        eventTable.getTableHeader().setFont(eventTable.getFont().deriveFont(Font.BOLD));
+        eventTable.getTableHeader().setBackground(new Color(70, 130, 180));
+        eventTable.getTableHeader().setForeground(Color.BLACK);
+        eventTable.getTableHeader().setReorderingAllowed(false);
+
+        eventTable.setAutoCreateRowSorter(true);
 
         // Custom renderer for better appearance
         eventTable.setDefaultRenderer(Object.class, new EventLogCellRenderer());
 
         JScrollPane scrollPane = new JScrollPane(eventTable);
+        scrollPane.setBorder(BorderFactory.createCompoundBorder(
+                new TitledBorder("Event Log"),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)
+        ));
         scrollPane.setPreferredSize(new Dimension(800, 400));
 
-        // Control panel
+        // Control panel with better styling
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        autoScrollCheckbox = new JCheckBox("Auto-scroll", true);
+        controlPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 10, 0));
+
+        autoScrollCheckbox = new JCheckBox("Auto-scroll to latest events", true);
+        autoScrollCheckbox.setFont(autoScrollCheckbox.getFont().deriveFont(Font.BOLD));
+
         JButton clearButton = new JButton("Clear Log");
+        clearButton.setBackground(new Color(198, 40, 40));
+        clearButton.setForeground(Color.BLACK);
+        clearButton.setFocusPainted(false);
 
         clearButton.addActionListener(e -> clearLog());
 
         controlPanel.add(autoScrollCheckbox);
+        controlPanel.add(Box.createHorizontalStrut(20));
         controlPanel.add(clearButton);
 
         add(controlPanel, BorderLayout.NORTH);
@@ -106,19 +135,25 @@ public class EventLogPanel extends JPanel {
         }
     }
 
-    private static class EventLogCellRenderer extends javax.swing.table.DefaultTableCellRenderer {
+    private static class EventLogCellRenderer extends DefaultTableCellRenderer {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus, int row, int column) {
             Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
+            if (!isSelected) {
+                c.setBackground(row % 2 == 0 ? Color.WHITE : new Color(248, 248, 248));
+            }
+
             // Color code status column
             if (column == 5 && value != null) {
-                String status = value.toString();
-                if (status.equalsIgnoreCase("success")) {
-                    c.setForeground(Color.GREEN.darker());
-                } else if (status.equalsIgnoreCase("failed")) {
+                String status = value.toString().toLowerCase();
+                if (status.contains("success") || status.contains("processed")) {
+                    c.setForeground(new Color(0, 128, 0)); // Dark green
+                    c.setFont(c.getFont().deriveFont(Font.BOLD));
+                } else if (status.contains("fail") || status.contains("error")) {
                     c.setForeground(Color.RED);
+                    c.setFont(c.getFont().deriveFont(Font.BOLD));
                 } else {
                     c.setForeground(Color.BLACK);
                 }

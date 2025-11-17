@@ -22,34 +22,32 @@ public class UpdateChecker {
     private static final String CURRENT_VERSION = "1.0.0";
     private static final String UPDATE_CONFIG_FILE = "update_config.properties";
 
+    public static void checkForUpdatesSilent(Component parent) {
+        new Thread(() -> {
+            try {
+                boolean scriptUpdated = checkScriptUpdate();
+                boolean appUpdated = checkAppUpdate();
+
+                // Only show dialog if there are updates
+                if (scriptUpdated || appUpdated) {
+                    showUpdateDialog(parent, scriptUpdated, appUpdated);
+                }
+                // No updates = no pop-up
+
+            } catch (Exception e) {
+                logger.error("Error checking for updates", e);
+                // Don't show error pop-up on startup, only log it
+            }
+        }).start();
+    }
+
     public static void checkForUpdates(Component parent) {
         new Thread(() -> {
             try {
                 boolean scriptUpdated = checkScriptUpdate();
                 boolean appUpdated = checkAppUpdate();
 
-                StringBuilder message = new StringBuilder();
-
-                if (scriptUpdated) {
-                    message.append("📝 The discord.lua script has been updated!\n")
-                            .append("Please download the latest version from the GitHub repository.\n\n");
-                } else {
-                    message.append("📝 discord.lua script is up to date.\n\n");
-                }
-
-                if (appUpdated) {
-                    message.append("🚀 A new version of SAPPDiscordBot is available!\n")
-                            .append("Please download the latest release from the GitHub repository.");
-                } else {
-                    message.append("🚀 SAPPDiscordBot is up to date.");
-                }
-
-                SwingUtilities.invokeLater(() ->
-                        JOptionPane.showMessageDialog(parent,
-                                message.toString(),
-                                "Update Check",
-                                JOptionPane.INFORMATION_MESSAGE)
-                );
+                showUpdateDialog(parent, scriptUpdated, appUpdated);
 
             } catch (Exception e) {
                 logger.error("Error checking for updates", e);
@@ -63,31 +61,48 @@ public class UpdateChecker {
         }).start();
     }
 
+    private static void showUpdateDialog(Component parent, boolean scriptUpdated, boolean appUpdated) {
+        StringBuilder message = new StringBuilder();
+
+        if (scriptUpdated) {
+            message.append("📝 The discord.lua script has been updated!\n")
+                    .append("Please download the latest version from the GitHub repository.\n\n");
+        } else {
+            message.append("📝 discord.lua script is up to date.\n\n");
+        }
+
+        if (appUpdated) {
+            message.append("🚀 A new version of SAPPDiscordBot is available!\n")
+                    .append("Please download the latest release from the GitHub repository.");
+        } else {
+            message.append("🚀 SAPPDiscordBot is up to date.");
+        }
+
+        SwingUtilities.invokeLater(() ->
+                JOptionPane.showMessageDialog(parent,
+                        message.toString(),
+                        "Update Check",
+                        JOptionPane.INFORMATION_MESSAGE)
+        );
+    }
+
     private static boolean checkScriptUpdate() throws IOException {
         try {
             String response = makeApiCall(SCRIPT_COMMITS_URL);
-
-            // Extract the latest commit SHA from response
             String latestCommitSha = extractCommitShaFromResponse(response);
             if (latestCommitSha == null) {
                 logger.warn("Could not extract commit SHA from response");
                 return false;
             }
 
-            // Load stored commit SHA
             String storedCommitSha = loadStoredCommitSha();
 
             if (storedCommitSha == null) {
-                // First time running - store the current commit SHA but don't show as update
                 storeCommitSha(latestCommitSha);
                 return false;
             } else {
-                // Compare with stored commit SHA
                 boolean isUpdated = !latestCommitSha.equals(storedCommitSha);
-
-                // Update stored commit SHA to the latest
                 storeCommitSha(latestCommitSha);
-
                 return isUpdated;
             }
 
@@ -100,13 +115,10 @@ public class UpdateChecker {
     private static boolean checkAppUpdate() throws IOException {
         try {
             String response = makeApiCall(APP_RELEASES_URL);
-
-            // Extract the latest version from the response
             if (response.contains("\"tag_name\"")) {
                 String versionTag = extractVersionFromResponse(response);
                 return !versionTag.equals(CURRENT_VERSION);
             }
-
             return false;
 
         } catch (IOException e) {
@@ -117,7 +129,6 @@ public class UpdateChecker {
 
     private static String extractCommitShaFromResponse(String response) {
         try {
-            // Look for "sha":"..." pattern in the commit response
             int start = response.indexOf("\"sha\":\"") + 7;
             if (start > 6) {
                 int end = response.indexOf("\"", start);
@@ -133,7 +144,6 @@ public class UpdateChecker {
 
     private static String extractVersionFromResponse(String response) {
         try {
-            // Simple extraction - look for "tag_name":"1.0.0" pattern
             int start = response.indexOf("\"tag_name\":\"") + 12;
             int end = response.indexOf("\"", start);
             if (start > 11 && end > start) {
@@ -142,7 +152,7 @@ public class UpdateChecker {
         } catch (Exception e) {
             logger.warn("Failed to extract version from response", e);
         }
-        return CURRENT_VERSION; // Fallback to current version
+        return CURRENT_VERSION;
     }
 
     private static String loadStoredCommitSha() {
@@ -151,7 +161,6 @@ public class UpdateChecker {
             props.load(input);
             return props.getProperty("last_commit_sha");
         } catch (IOException e) {
-            // File doesn't exist yet - this is normal for first run
             return null;
         }
     }
@@ -176,8 +185,6 @@ public class UpdateChecker {
             connection.setRequestProperty("Accept", "application/vnd.github.v3+json");
             connection.setConnectTimeout(10000);
             connection.setReadTimeout(10000);
-
-            // User-Agent to comply with GitHub API requirements
             connection.setRequestProperty("User-Agent", "SAPPDiscordBot/" + CURRENT_VERSION);
 
             int responseCode = connection.getResponseCode();
