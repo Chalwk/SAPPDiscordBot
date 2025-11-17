@@ -498,8 +498,6 @@ public class OutputConfigPanel extends JPanel {
         }
 
         public void saveEventTemplates() {
-            // The EventTemplatesSection is already working on the main eventConfigs map,
-            // so changes are automatically applied. This method is kept for consistency.
             templatesSection.saveToConfig(configManager.getConfig().getEventConfigs());
         }
 
