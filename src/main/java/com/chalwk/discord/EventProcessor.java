@@ -35,7 +35,7 @@ public class EventProcessor {
             configKey = eventType + "_" + subtype;
         }
 
-        EventConfig eventConfig = configManager.getConfig().getEventConfigs().get(configKey);
+        EventConfig eventConfig = configManager.getConfig().getEventConfigsForServer(serverName).get(configKey);
 
         if (eventConfig == null || !eventConfig.isEnabled()) {
             logger.debug("Event not configured or disabled: {}", configKey);

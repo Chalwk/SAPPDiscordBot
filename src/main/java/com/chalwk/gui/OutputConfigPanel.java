@@ -2,6 +2,7 @@ package com.chalwk.gui;
 
 import com.chalwk.config.AppConfig;
 import com.chalwk.config.ConfigManager;
+import com.chalwk.config.EventConfig;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -85,7 +86,7 @@ public class OutputConfigPanel extends JPanel {
         JPanel channelsPanel = createGlobalChannelsPanel();
 
         // Global event templates
-        JPanel templatesPanel = new EventTemplatesSection("Global", configManager.getConfig().getEventConfigs());
+        JPanel templatesPanel = new EventTemplatesSection("Global", configManager);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, channelsPanel, templatesPanel);
         splitPane.setResizeWeight(0.3);
@@ -324,6 +325,9 @@ public class OutputConfigPanel extends JPanel {
             config.getChannels().remove(serverName + "_GENERAL");
             config.getChannels().remove(serverName + "_CHAT");
             config.getChannels().remove(serverName + "_COMMAND");
+
+            // Remove server-specific event templates
+            config.getServerEventConfigs().remove(serverName);
         }
     }
 
@@ -371,6 +375,9 @@ public class OutputConfigPanel extends JPanel {
                 config.getEventConfigs().clear();
                 config.getEventConfigs().putAll(defaultConfig.getEventConfigs());
 
+                // Reset server-specific event configurations
+                config.getServerEventConfigs().clear();
+
                 configManager.saveConfig(config);
                 loadConfig();
 
@@ -388,7 +395,7 @@ public class OutputConfigPanel extends JPanel {
         }
     }
 
-    // Custom panel for server configuration (channels + event templates)
+    // Server-specific configuration panel
     private static class ServerConfigPanel extends JPanel {
         private final String serverName;
         private final ConfigManager configManager;
@@ -416,8 +423,8 @@ public class OutputConfigPanel extends JPanel {
             // Create channels panel
             JPanel channelsPanel = createChannelsPanel();
 
-            // Create event templates section - use the main event configs
-            templatesSection = new EventTemplatesSection(serverName, configManager.getConfig().getEventConfigs());
+            // Create event templates section
+            templatesSection = new EventTemplatesSection(serverName, configManager);
 
             // Use split pane to divide channels and templates
             JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, channelsPanel, templatesSection);
@@ -498,7 +505,29 @@ public class OutputConfigPanel extends JPanel {
         }
 
         public void saveEventTemplates() {
-            templatesSection.saveToConfig(configManager.getConfig().getEventConfigs());
+            // For server-specific configurations, save to serverEventConfigs
+            if (!"Global".equals(serverName)) {
+                Map<String, EventConfig> serverConfigs = new HashMap<>();
+
+                // Copy all the current configurations for this server
+                for (Map.Entry<String, EventConfig> entry : templatesSection.getEventConfigs().entrySet()) {
+                    EventConfig original = entry.getValue();
+                    // Create a new instance to avoid reference issues
+                    serverConfigs.put(entry.getKey(), new EventConfig(
+                            original.isEnabled(),
+                            original.getTemplate(),
+                            original.getColor(),
+                            original.isUseEmbed(),
+                            original.getChannelId()
+                    ));
+                }
+
+                // Save to server-specific configs
+                configManager.getConfig().setEventConfigsForServer(serverName, serverConfigs);
+            } else {
+                // For global, update the main eventConfigs
+                templatesSection.saveToConfig(configManager.getConfig().getEventConfigs());
+            }
         }
 
         // Getters

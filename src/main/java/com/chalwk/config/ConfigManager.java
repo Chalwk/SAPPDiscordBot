@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class ConfigManager {
 
@@ -38,6 +39,11 @@ public class ConfigManager {
             if (configFile.exists()) {
                 config = objectMapper.readValue(configFile, AppConfig.class);
                 logger.info("Configuration loaded from {}", CONFIG_FILE);
+
+                // Ensure backward compatibility - if serverEventConfigs is null, initialize it
+                if (config.getServerEventConfigs() == null) {
+                    config.setServerEventConfigs(new HashMap<>());
+                }
             } else {
                 config = new AppConfig();
                 logger.info("No configuration file found, using defaults");

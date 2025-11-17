@@ -6,6 +6,7 @@ import java.util.Map;
 public class AppConfig {
     private final Map<String, String> channels = new HashMap<>();
     private final Map<String, EventConfig> eventConfigs = new HashMap<>();
+    private final Map<String, Map<String, EventConfig>> serverEventConfigs = new HashMap<>();
     private String discordToken = "";
     private String watchDirectory = "./discord_events";
     private int pollInterval = 1000;
@@ -122,6 +123,34 @@ public class AppConfig {
 
     public Map<String, EventConfig> getEventConfigs() {
         return eventConfigs;
+    }
+
+    // Get event configs for a specific server (falls back to global if server-specific doesn't exist)
+    public Map<String, EventConfig> getEventConfigsForServer(String serverName) {
+        if (serverName != null && serverEventConfigs.containsKey(serverName)) {
+            return serverEventConfigs.get(serverName);
+        }
+        return eventConfigs; // Fall back to global configs
+    }
+
+    // Set event configs for a specific server
+    public void setEventConfigsForServer(String serverName, Map<String, EventConfig> configs) {
+        if (serverName != null) {
+            serverEventConfigs.put(serverName, configs);
+        }
+    }
+
+    // Get all server-specific configs
+    public Map<String, Map<String, EventConfig>> getServerEventConfigs() {
+        return serverEventConfigs;
+    }
+
+    // Set all server-specific configs
+    public void setServerEventConfigs(Map<String, Map<String, EventConfig>> serverEventConfigs) {
+        this.serverEventConfigs.clear();
+        if (serverEventConfigs != null) {
+            this.serverEventConfigs.putAll(serverEventConfigs);
+        }
     }
 
     public String getDiscordToken() {

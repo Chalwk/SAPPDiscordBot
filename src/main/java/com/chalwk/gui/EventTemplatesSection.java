@@ -1,10 +1,13 @@
 package com.chalwk.gui;
 
+import com.chalwk.config.AppConfig;
+import com.chalwk.config.ConfigManager;
 import com.chalwk.config.EventConfig;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
+import java.util.HashMap;
 import java.util.Map;
 
 public class EventTemplatesSection extends JPanel {
@@ -13,11 +16,45 @@ public class EventTemplatesSection extends JPanel {
     private final EventTemplateTableModel tableModel;
     private final JTable eventTable;
 
-    public EventTemplatesSection(String serverName, Map<String, EventConfig> eventConfigs) {
+    public EventTemplatesSection(String serverName, ConfigManager configManager) {
         this.serverName = serverName;
-        this.tableModel = new EventTemplateTableModel(eventConfigs);
+
+        // Use server-specific configs if available, otherwise use global configs as base
+        Map<String, EventConfig> baseConfigs = configManager.getConfig().getEventConfigs();
+        Map<String, EventConfig> workingConfigs = new HashMap<>();
+
+        // Copy the base configs to working configs
+        for (Map.Entry<String, EventConfig> entry : baseConfigs.entrySet()) {
+            workingConfigs.put(entry.getKey(), new EventConfig(
+                    entry.getValue().isEnabled(),
+                    entry.getValue().getTemplate(),
+                    entry.getValue().getColor(),
+                    entry.getValue().isUseEmbed(),
+                    entry.getValue().getChannelId()
+            ));
+        }
+
+        // If we have server-specific configs, apply them over the base
+        if (!"Global".equals(serverName)) {
+            Map<String, EventConfig> serverConfigs = configManager.getConfig().getEventConfigsForServer(serverName);
+            if (serverConfigs != null && serverConfigs != baseConfigs) {
+                workingConfigs.putAll(serverConfigs);
+            }
+        }
+
+        this.tableModel = new EventTemplateTableModel(workingConfigs, serverName, configManager);
         this.eventTable = new JTable(tableModel);
         initializeUI();
+    }
+
+    // Add getter method for table model
+    public EventTemplateTableModel getTableModel() {
+        return tableModel;
+    }
+
+    // Add getter method for event configs
+    public Map<String, EventConfig> getEventConfigs() {
+        return tableModel.getEventConfigs();
     }
 
     private void initializeUI() {
@@ -74,10 +111,19 @@ public class EventTemplatesSection extends JPanel {
 
         private final Map<String, EventConfig> eventConfigs;
         private final String[] eventKeys;
+        private final String serverName;
+        private final ConfigManager configManager;
 
-        public EventTemplateTableModel(Map<String, EventConfig> eventConfigs) {
+        public EventTemplateTableModel(Map<String, EventConfig> eventConfigs, String serverName, ConfigManager configManager) {
             this.eventConfigs = eventConfigs;
+            this.serverName = serverName;
+            this.configManager = configManager;
             this.eventKeys = eventConfigs.keySet().toArray(new String[0]);
+        }
+
+        // Add getter for eventConfigs
+        public Map<String, EventConfig> getEventConfigs() {
+            return eventConfigs;
         }
 
         @Override
@@ -138,16 +184,29 @@ public class EventTemplatesSection extends JPanel {
             }
 
             fireTableCellUpdated(rowIndex, columnIndex);
+
+            // Auto-save server-specific configurations
+            if (!"Global".equals(serverName)) {
+                configManager.getConfig().setEventConfigsForServer(serverName, eventConfigs);
+                try {
+                    configManager.saveConfig(configManager.getConfig());
+                } catch (Exception e) {
+                    // Log error but don't show dialog to avoid spamming user during typing
+                    System.err.println("Error auto-saving configuration: " + e.getMessage());
+                }
+            }
         }
 
         public void saveToConfig(Map<String, EventConfig> targetConfigs) {
-            // Changes are already applied to the eventConfigs map through setValueAt
-            // This method is mainly for consistency with the API
+            if ("Global".equals(serverName)) {
+                targetConfigs.clear();
+                targetConfigs.putAll(eventConfigs);
+            }
         }
 
         public void resetToDefaults() {
             // Create a new default config to get default values
-            com.chalwk.config.AppConfig defaultConfig = new com.chalwk.config.AppConfig();
+            AppConfig defaultConfig = new AppConfig();
             Map<String, EventConfig> defaults = defaultConfig.getEventConfigs();
 
             for (String eventKey : eventKeys) {
@@ -163,6 +222,16 @@ public class EventTemplatesSection extends JPanel {
             }
 
             fireTableDataChanged();
+
+            // Auto-save after reset
+            if (!"Global".equals(serverName)) {
+                configManager.getConfig().setEventConfigsForServer(serverName, eventConfigs);
+                try {
+                    configManager.saveConfig(configManager.getConfig());
+                } catch (Exception e) {
+                    System.err.println("Error saving after reset: " + e.getMessage());
+                }
+            }
         }
     }
 }
