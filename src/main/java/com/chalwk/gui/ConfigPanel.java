@@ -222,14 +222,35 @@ public class ConfigPanel extends JPanel {
 
     private void resetConfig() {
         int result = JOptionPane.showConfirmDialog(this,
-                "Are you sure you want to reset all settings to defaults?",
+                "Are you sure you want to reset bot configuration settings to defaults?",
                 "Confirm Reset",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE);
 
         if (result == JOptionPane.YES_OPTION) {
-            configManager.resetToDefaults();
-            loadConfig();
+            try {
+                AppConfig config = configManager.getConfig();
+
+                // Only reset bot configuration settings, preserve output configuration
+                config.setDiscordToken("");
+                config.setWatchDirectory("./discord_events");
+                config.setPollInterval(1000);
+                config.setAutoStart(false);
+
+                configManager.saveConfig(config);
+                loadConfig();
+
+                JOptionPane.showMessageDialog(this,
+                        "Bot configuration reset to defaults!",
+                        "Reset Complete",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                        "Error resetting configuration: " + e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }

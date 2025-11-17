@@ -112,32 +112,15 @@ public class OutputConfigPanel extends JPanel {
 
         JTable table = new JTable(model);
         table.setRowHeight(25);
-        table.getColumnModel().getColumn(2).setPreferredWidth(300); // Wider template column
+        table.getColumnModel().getColumn(2).setPreferredWidth(300);
 
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(new TitledBorder("Event Configuration"));
 
         panel.add(scrollPane, BorderLayout.CENTER);
 
-        // Quick templates panel
-        panel.add(createQuickTemplatesPanel(), BorderLayout.SOUTH);
-
+        // Remove the quick templates panel - no longer needed
         return panel;
-    }
-
-    private JPanel createQuickTemplatesPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panel.setBorder(new TitledBorder("Quick Templates"));
-
-        JButton defaultTemplatesBtn = new JButton("Load Default Templates");
-        defaultTemplatesBtn.addActionListener(e -> loadDefaultTemplates());
-
-        panel.add(defaultTemplatesBtn);
-        return panel;
-    }
-
-    private void loadDefaultTemplates() {
-        // TODO: Implementation to load default templates
     }
 
     private JButton createStyledButton(String text, Color bgColor) {
@@ -173,10 +156,40 @@ public class OutputConfigPanel extends JPanel {
 
     private void resetConfig() {
         int result = JOptionPane.showConfirmDialog(this,
-                "Reset all settings to defaults?", "Confirm Reset", JOptionPane.YES_NO_OPTION);
+                "Are you sure you want to reset output configuration to defaults? This will reset all channel IDs and event templates.",
+                "Confirm Reset",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+
         if (result == JOptionPane.YES_OPTION) {
-            configManager.resetToDefaults();
-            loadConfig();
+            try {
+                AppConfig config = configManager.getConfig();
+
+                // Reset only output configuration (channels and event configs)
+                AppConfig defaultConfig = new AppConfig();
+
+                // Reset channels to defaults
+                config.getChannels().clear();
+                config.getChannels().putAll(defaultConfig.getChannels());
+
+                // Reset event configurations to defaults
+                config.getEventConfigs().clear();
+                config.getEventConfigs().putAll(defaultConfig.getEventConfigs());
+
+                configManager.saveConfig(config);
+                loadConfig();
+
+                JOptionPane.showMessageDialog(this,
+                        "Output configuration reset to defaults!",
+                        "Reset Complete",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                        "Error resetting configuration: " + e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 

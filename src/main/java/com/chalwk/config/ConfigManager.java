@@ -47,14 +47,4 @@ public class ConfigManager {
             config = new AppConfig();
         }
     }
-
-    public void resetToDefaults() {
-        this.config = new AppConfig();
-        try {
-            objectMapper.writeValue(new File(CONFIG_FILE), config);
-            logger.info("Configuration reset to defaults");
-        } catch (IOException e) {
-            logger.error("Error saving default configuration", e);
-        }
-    }
 }
