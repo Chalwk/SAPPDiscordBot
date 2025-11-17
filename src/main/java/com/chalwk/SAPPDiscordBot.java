@@ -22,7 +22,6 @@ public class SAPPDiscordBot {
     private static EventProcessor eventProcessor;
 
     public static void main(String[] args) {
-        // Set system look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
@@ -58,7 +57,7 @@ public class SAPPDiscordBot {
             }
 
             // Initialize event processor
-            eventProcessor = new EventProcessor();
+            eventProcessor = new EventProcessor(configManager);
 
             // Initialize file watcher with UI listener that includes server name
             fileWatcher = new FileWatcher(configManager, discordBot, eventProcessor);
@@ -67,9 +66,9 @@ public class SAPPDiscordBot {
             });
             fileWatcher.startWatching();
 
+            mainFrame.updateStatus(true);
             logger.info("SAPP Discord Bot started successfully");
 
-            // Show success message
             trayManager.showTrayMessage("SAPP Discord Bot started successfully");
 
         } catch (Exception e) {
@@ -95,11 +94,15 @@ public class SAPPDiscordBot {
                 eventProcessor = null;
             }
 
-            mainFrame.updateStatus(false);
+            if (mainFrame != null) {
+                mainFrame.updateStatus(false);
+            }
+
             logger.info("SAPP Discord Bot stopped successfully");
 
-            // Show stopped message
-            trayManager.showTrayMessage("SAPP Discord Bot stopped");
+            if (trayManager != null) {
+                trayManager.showTrayMessage("SAPP Discord Bot stopped");
+            }
 
         } catch (Exception e) {
             logger.error("Error stopping bot", e);

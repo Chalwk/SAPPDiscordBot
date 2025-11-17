@@ -2,7 +2,7 @@ package com.chalwk.gui;
 
 import com.chalwk.SAPPDiscordBot;
 import com.chalwk.config.ConfigManager;
-import com.chalwk.model.DiscordEvent;
+import com.chalwk.model.RawEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -74,7 +74,10 @@ public class MainFrame extends JFrame {
 
         // Configuration tab
         configPanel = new ConfigPanel(configManager);
-        tabbedPane.addTab("Configuration", configPanel);
+        tabbedPane.addTab("Bot Configuration", configPanel);
+
+        OutputConfigPanel outputConfigPanel = new OutputConfigPanel(configManager);
+        tabbedPane.addTab("Output Configuration", outputConfigPanel);
 
         // Event Log tab
         eventLogPanel = new EventLogPanel();
@@ -125,7 +128,7 @@ public class MainFrame extends JFrame {
                 statusLabel.setForeground(Color.GREEN.darker());
                 startButton.setEnabled(false);
                 stopButton.setEnabled(true);
-                tabbedPane.setSelectedIndex(1); // Switch to the event log when started
+                tabbedPane.setSelectedIndex(1);
             } else {
                 statusLabel.setText("Status: Stopped");
                 statusLabel.setForeground(Color.RED);
@@ -135,7 +138,7 @@ public class MainFrame extends JFrame {
         });
     }
 
-    public void addEventLog(DiscordEvent event, String serverName, String status) {
+    public void addEventLog(RawEvent event, String serverName, String status) {
         if (eventLogPanel != null) {
             eventLogPanel.addEvent(event, serverName, status);
         }
@@ -164,7 +167,6 @@ public class MainFrame extends JFrame {
     }
 
     private void refreshView() {
-        // Refresh any dynamic content if needed
         if (configPanel != null) {
             configPanel.revalidate();
             configPanel.repaint();

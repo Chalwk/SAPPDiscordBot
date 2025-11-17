@@ -1,6 +1,6 @@
 package com.chalwk.gui;
 
-import com.chalwk.model.DiscordEvent;
+import com.chalwk.model.RawEvent;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class EventLogPanel extends JPanel {
 
@@ -23,11 +24,11 @@ public class EventLogPanel extends JPanel {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Create table model and table
+        // Table model and table
         tableModel = new EventTableModel();
         eventTable = new JTable(tableModel);
 
-        // Enhanced table styling
+        // Table styling
         eventTable.setFillsViewportHeight(true);
         eventTable.setRowHeight(25);
         eventTable.setShowGrid(true);
@@ -43,8 +44,6 @@ public class EventLogPanel extends JPanel {
         eventTable.getTableHeader().setReorderingAllowed(false);
 
         eventTable.setAutoCreateRowSorter(true);
-
-        // Custom renderer for better appearance
         eventTable.setDefaultRenderer(Object.class, new EventLogCellRenderer());
 
         JScrollPane scrollPane = new JScrollPane(eventTable);
@@ -54,7 +53,7 @@ public class EventLogPanel extends JPanel {
         ));
         scrollPane.setPreferredSize(new Dimension(800, 400));
 
-        // Control panel with better styling
+        // Control panel
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         controlPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 10, 0));
 
@@ -76,11 +75,9 @@ public class EventLogPanel extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    public void addEvent(DiscordEvent event, String serverName, String status) {
+    public void addEvent(RawEvent event, String serverName, String status) {
         SwingUtilities.invokeLater(() -> {
             tableModel.addEvent(event, serverName, status);
-
-            // Auto-scroll to bottom if enabled
             if (autoScrollCheckbox.isSelected()) {
                 scrollToBottom();
             }
@@ -103,35 +100,46 @@ public class EventLogPanel extends JPanel {
     private static class EventLogEntry {
         String timestamp;
         String serverName;
-        String type;
-        String channel;
+        String eventType;
+        String subtype;
         String content;
         String status;
 
-        EventLogEntry(DiscordEvent event, String serverName, String status) {
+        EventLogEntry(RawEvent event, String serverName, String status) {
             this.timestamp = new SimpleDateFormat("HH:mm:ss").format(new Date());
             this.serverName = serverName;
+            this.eventType = event.getEvent_type();
+            this.subtype = event.getSubtype();
             this.status = status;
 
-            if (event.getMessage() != null) {
-                this.type = "Message";
-                this.channel = event.getMessage().getChannel_id();
-                this.content = event.getMessage().getText();
-            } else if (event.getEmbed() != null) {
-                this.type = "Embed";
-                this.channel = event.getEmbed().getChannel_id();
-                this.content = event.getEmbed().getTitle() != null ?
-                        event.getEmbed().getTitle() : "No Title";
-            } else {
-                this.type = "Unknown";
-                this.channel = "N/A";
-                this.content = "Invalid Event";
-            }
+            // Build content from event data
+            this.content = buildContentFromData(event.getData());
 
             // Truncate long content for display
-            if (this.content != null && this.content.length() > 100) {
+            if (this.content.length() > 100) {
                 this.content = this.content.substring(0, 97) + "...";
             }
+        }
+
+        private String buildContentFromData(Map<String, Object> data) {
+            if (data == null || data.isEmpty()) {
+                return "No data";
+            }
+
+            StringBuilder sb = new StringBuilder();
+            for (Map.Entry<String, Object> entry : data.entrySet()) {
+                if (sb.length() > 0) {
+                    sb.append(", ");
+                }
+                sb.append(entry.getKey()).append(": ").append(entry.getValue());
+
+                // Limit the total length
+                if (sb.length() > 80) {
+                    sb.append("...");
+                    break;
+                }
+            }
+            return sb.toString();
         }
     }
 
@@ -164,10 +172,10 @@ public class EventLogPanel extends JPanel {
     }
 
     private static class EventTableModel extends AbstractTableModel {
-        private final String[] columnNames = {"Time", "Server", "Type", "Channel", "Content", "Status"};
+        private final String[] columnNames = {"Time", "Server", "Event Type", "Subtype", "Content", "Status"};
         private final List<EventLogEntry> events = new ArrayList<>();
 
-        public void addEvent(DiscordEvent event, String serverName, String status) {
+        public void addEvent(RawEvent event, String serverName, String status) {
             events.add(new EventLogEntry(event, serverName, status));
             fireTableRowsInserted(events.size() - 1, events.size() - 1);
         }
@@ -201,8 +209,8 @@ public class EventLogPanel extends JPanel {
             return switch (columnIndex) {
                 case 0 -> entry.timestamp;
                 case 1 -> entry.serverName;
-                case 2 -> entry.type;
-                case 3 -> entry.channel;
+                case 2 -> entry.eventType;
+                case 3 -> entry.subtype != null ? entry.subtype : "";
                 case 4 -> entry.content;
                 case 5 -> entry.status;
                 default -> "";

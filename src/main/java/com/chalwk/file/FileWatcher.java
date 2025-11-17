@@ -3,14 +3,14 @@ package com.chalwk.file;
 import com.chalwk.config.ConfigManager;
 import com.chalwk.discord.DiscordBot;
 import com.chalwk.discord.EventProcessor;
-import com.chalwk.model.DiscordEvent;
-import com.chalwk.model.EmbedField;
-import com.chalwk.model.EventEmbed;
-import com.chalwk.model.EventMessage;
+import com.chalwk.model.RawEvent;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -24,7 +24,7 @@ public class FileWatcher {
     private final ConfigManager configManager;
     private final DiscordBot discordBot;
     private final EventProcessor eventProcessor;
-    private final JSONParser jsonParser;
+    private final ObjectMapper objectMapper;
     private final ScheduledExecutorService scheduler;
     private final Map<String, FileState> fileStates;
     private boolean isWatching;
@@ -34,7 +34,7 @@ public class FileWatcher {
         this.configManager = configManager;
         this.discordBot = discordBot;
         this.eventProcessor = eventProcessor;
-        this.jsonParser = new JSONParser();
+        this.objectMapper = new ObjectMapper();
         this.scheduler = Executors.newSingleThreadScheduledExecutor();
         this.fileStates = new HashMap<>();
     }
@@ -55,6 +55,16 @@ public class FileWatcher {
         if (!directory.exists() || !directory.isDirectory()) {
             logger.error("Watch directory does not exist or is not a directory: {}", watchDir);
             return;
+        }
+
+        // Create directory if it doesn't exist
+        if (!directory.exists()) {
+            if (directory.mkdirs()) {
+                logger.info("Created watch directory: {}", watchDir);
+            } else {
+                logger.error("Failed to create watch directory: {}", watchDir);
+                return;
+            }
         }
 
         // Clear all existing JSON files when starting
@@ -88,7 +98,7 @@ public class FileWatcher {
 
     private void clearFile(File file) {
         try {
-            java.io.FileWriter writer = new java.io.FileWriter(file);
+            FileWriter writer = new FileWriter(file);
             writer.write("[]");
             writer.close();
         } catch (Exception e) {
@@ -162,7 +172,7 @@ public class FileWatcher {
 
     private void processNewEvents(File file, FileState state) {
         try {
-            List<DiscordEvent> allEvents = jsonParser.parseEvents(file);
+            List<RawEvent> allEvents = parseRawEvents(file);
 
             if (allEvents.isEmpty()) {
                 return; // No events to process
@@ -171,14 +181,14 @@ public class FileWatcher {
             // Extract server name from filename (remove .json extension)
             String serverName = file.getName().replace(".json", "");
 
-            List<DiscordEvent> eventsToProcess = new ArrayList<>();
+            List<RawEvent> eventsToProcess = new ArrayList<>();
 
             if (state.processedEventHashes.isEmpty()) {
                 eventsToProcess.addAll(allEvents);
                 logger.debug("Processing all {} events from file: {}", allEvents.size(), file.getName());
             } else {
                 // Filter out already processed events
-                for (DiscordEvent event : allEvents) {
+                for (RawEvent event : allEvents) {
                     String eventHash = generateEventHash(event);
                     if (!state.processedEventHashes.contains(eventHash)) {
                         eventsToProcess.add(event);
@@ -188,11 +198,11 @@ public class FileWatcher {
             }
 
             // Process events and track successful ones
-            for (DiscordEvent event : eventsToProcess) {
+            for (RawEvent event : eventsToProcess) {
                 String eventHash = generateEventHash(event);
 
-                // Process the event
-                eventProcessor.processEvent(event, discordBot);
+                // Process the raw event (this will apply templates from Java config)
+                eventProcessor.processRawEvent(event, discordBot);
 
                 // Mark as successfully processed
                 state.processedEventHashes.add(eventHash);
@@ -202,13 +212,15 @@ public class FileWatcher {
                     eventListener.onEventProcessed(event, serverName);
                 }
 
-                logger.debug("Successfully processed event: {}", eventHash.substring(0, 8));
+                logger.debug("Successfully processed event: {} from server '{}'",
+                        event.getEvent_type(), serverName);
             }
 
             // Clear the file after processing all events
             if (!eventsToProcess.isEmpty()) {
                 clearFileAfterProcessing(file, state);
-                logger.info("Processed {} events from server '{}' and cleared file", eventsToProcess.size(), serverName);
+                logger.info("Processed {} events from server '{}' and cleared file",
+                        eventsToProcess.size(), serverName);
             }
 
         } catch (Exception e) {
@@ -217,11 +229,34 @@ public class FileWatcher {
         }
     }
 
+    private List<RawEvent> parseRawEvents(File file) {
+        try {
+            // Handle both array and single event formats
+            String content = new String(java.nio.file.Files.readAllBytes(file.toPath()));
+            if (content.trim().isEmpty() || content.trim().equals("[]")) {
+                return new ArrayList<>();
+            }
+
+            if (content.trim().startsWith("[")) {
+                // Array format
+                return objectMapper.readValue(file, new TypeReference<List<RawEvent>>() {
+                });
+            } else {
+                // Single event format
+                RawEvent singleEvent = objectMapper.readValue(file, RawEvent.class);
+                return Collections.singletonList(singleEvent);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to parse raw events from file: {}", file.getName(), e);
+            return new ArrayList<>();
+        }
+    }
+
     // Clear file but maintain state of processed events
     private void clearFileAfterProcessing(File file, FileState state) {
         try {
             // Clear the physical file
-            java.io.FileWriter writer = new java.io.FileWriter(file);
+            FileWriter writer = new FileWriter(file);
             writer.write("[]");
             writer.close();
 
@@ -235,32 +270,62 @@ public class FileWatcher {
         }
     }
 
-    private String generateEventHash(DiscordEvent event) {
+    private String generateEventHash(RawEvent event) {
         try {
             StringBuilder content = new StringBuilder();
 
-            if (event.getMessage() != null) {
-                EventMessage msg = event.getMessage();
-                content.append("MSG:")
-                        .append(msg.getChannel_id()).append(":")
-                        .append(msg.getText()).append(":");
-            } else if (event.getEmbed() != null) {
-                EventEmbed embed = event.getEmbed();
-                content.append("EMBED:")
-                        .append(embed.getChannel_id()).append(":")
-                        .append(embed.getTitle()).append(":")
-                        .append(embed.getDescription()).append(":")
-                        .append(embed.getFooter()).append(":");
+            content.append(event.getEvent_type()).append(":");
+            if (event.getSubtype() != null) {
+                content.append(event.getSubtype()).append(":");
+            }
+            content.append(event.getTimestamp()).append(":");
 
-                if (embed.getFields() != null) {
-                    for (EmbedField field : embed.getFields()) {
-                        content.append(field.getName()).append(":")
-                                .append(field.getValue()).append(":");
-                    }
+            // Include relevant data fields in the hash to identify unique events
+            if (event.getData() != null) {
+                // For different event types, use different identifying fields
+                switch (event.getEvent_type()) {
+                    case "event_join":
+                    case "event_leave":
+                        if (event.getData().get("name") != null) {
+                            content.append(event.getData().get("name"));
+                        }
+                        if (event.getData().get("id") != null) {
+                            content.append(event.getData().get("id"));
+                        }
+                        break;
+                    case "event_chat":
+                        if (event.getData().get("name") != null) {
+                            content.append(event.getData().get("name"));
+                        }
+                        if (event.getData().get("msg") != null) {
+                            content.append(event.getData().get("msg"));
+                        }
+                        break;
+                    case "event_death":
+                        if (event.getData().get("victimName") != null) {
+                            content.append(event.getData().get("victimName"));
+                        }
+                        if (event.getData().get("killerName") != null) {
+                            content.append(event.getData().get("killerName"));
+                        }
+                        break;
+                    case "event_score":
+                        if (event.getData().get("name") != null) {
+                            content.append(event.getData().get("name"));
+                        }
+                        if (event.getData().get("score") != null) {
+                            content.append(event.getData().get("score"));
+                        }
+                        break;
+                    default:
+                        // For other events, include all data for uniqueness
+                        for (Map.Entry<String, Object> entry : event.getData().entrySet()) {
+                            content.append(entry.getKey()).append(":").append(entry.getValue()).append(":");
+                        }
                 }
             }
 
-            // Use a consistent hash without timestamp to ensure same events have same hash
+            // Use a consistent hash to ensure same events have same hash
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(content.toString().getBytes());
 
@@ -272,13 +337,17 @@ public class FileWatcher {
             }
             return hexString.toString();
         } catch (Exception e) {
-            // Fallback to UUID
-            return UUID.randomUUID().toString();
+            // Fallback to UUID with event type for basic uniqueness
+            return event.getEvent_type() + "_" + UUID.randomUUID();
         }
     }
 
+    public boolean isWatching() {
+        return isWatching;
+    }
+
     public interface EventListener {
-        void onEventProcessed(DiscordEvent event, String serverName);
+        void onEventProcessed(RawEvent event, String serverName);
     }
 
     // Track state for each file

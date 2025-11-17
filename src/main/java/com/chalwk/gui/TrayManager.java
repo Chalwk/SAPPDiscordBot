@@ -7,8 +7,8 @@ import java.awt.*;
 public class TrayManager {
 
     private final MainFrame mainFrame;
-    private TrayIcon trayIcon;
     private final boolean traySupported;
+    private TrayIcon trayIcon;
 
     public TrayManager(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -23,17 +23,12 @@ public class TrayManager {
 
         try {
             SystemTray tray = SystemTray.getSystemTray();
-
-            // Create tray icon - handle Linux icon loading
             Image image = createTrayImage();
 
-            // Create popup menu
             PopupMenu popup = getPopupMenu();
 
             trayIcon = new TrayIcon(image, "SAPP Discord Bot", popup);
             trayIcon.setImageAutoSize(true);
-
-            // Add double-click listener to restore
             trayIcon.addActionListener(e -> mainFrame.restoreFromTray());
 
             tray.add(trayIcon);
@@ -90,7 +85,6 @@ public class TrayManager {
     }
 
     private Image createFallbackIcon() {
-        // Create a simple red icon as fallback
         int size = 16;
         java.awt.image.BufferedImage image = new java.awt.image.BufferedImage(size, size, java.awt.image.BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = image.createGraphics();

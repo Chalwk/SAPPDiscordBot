@@ -59,17 +59,17 @@ public class DiscordBot {
         logger.info("Discord bot stopped");
     }
 
-    public boolean sendMessage(String channelId, String message) {
+    public void sendMessage(String channelId, String message) {
         if (!isRunning || jda == null) {
             logger.warn("Discord bot is not running");
-            return false;
+            return;
         }
 
         try {
             TextChannel channel = jda.getTextChannelById(channelId);
             if (channel == null) {
                 logger.error("Channel not found: {}", channelId);
-                return false;
+                return;
             }
 
             // Split long messages to avoid Discord's 2000-character limit
@@ -79,34 +79,30 @@ public class DiscordBot {
 
             channel.sendMessage(message).queue();
             logger.debug("Message sent to channel {}: {}", channelId, message);
-            return true;
 
         } catch (Exception e) {
             logger.error("Failed to send message to channel {}", channelId, e);
-            return false;
         }
     }
 
-    public boolean sendEmbed(String channelId, MessageEmbed embed) {
+    public void sendEmbed(String channelId, MessageEmbed embed) {
         if (!isRunning || jda == null) {
             logger.warn("Discord bot is not running");
-            return false;
+            return;
         }
 
         try {
             TextChannel channel = jda.getTextChannelById(channelId);
             if (channel == null) {
                 logger.error("Channel not found: {}", channelId);
-                return false;
+                return;
             }
 
             channel.sendMessageEmbeds(embed).queue();
             logger.debug("Embed sent to channel {}: {}", channelId, embed.getTitle());
-            return true;
 
         } catch (Exception e) {
             logger.error("Failed to send embed to channel {}", channelId, e);
-            return false;
         }
     }
 
