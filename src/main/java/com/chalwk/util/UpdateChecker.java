@@ -65,17 +65,17 @@ public class UpdateChecker {
         StringBuilder message = new StringBuilder();
 
         if (scriptUpdated) {
-            message.append("📝 The discord.lua script has been updated!\n")
+            message.append("The discord.lua script has been updated!\n")
                     .append("Please download the latest version from the GitHub repository.\n\n");
         } else {
-            message.append("📝 discord.lua script is up to date.\n\n");
+            message.append("discord.lua script is up to date.\n\n");
         }
 
         if (appUpdated) {
-            message.append("🚀 A new version of SAPPDiscordBot is available!\n")
+            message.append("A new version of SAPPDiscordBot is available!\n")
                     .append("Please download the latest release from the GitHub repository.");
         } else {
-            message.append("🚀 SAPPDiscordBot is up to date.");
+            message.append("SAPPDiscordBot is up to date.");
         }
 
         SwingUtilities.invokeLater(() ->
