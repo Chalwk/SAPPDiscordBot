@@ -33,13 +33,13 @@ public class AppConfig {
         // Game events
         eventConfigs.put("event_start", new EventConfig(
                 true,
-                "**🗺️ Game Started** → `$map` **-** `$gt ($ffa)`",
+                "**🗺️ Game Started** → `$map` **-** `$gt (FFA: $ffa)`",
                 "green", true, "GENERAL"
         ));
 
         eventConfigs.put("event_end", new EventConfig(
                 true,
-                "**🏁 Game Ended** → `$map` **-** `$gt ($ffa)`",
+                "**🏁 Game Ended** → `$map` **-** `$gt (FFA: $ffa)`",
                 "red", true, "GENERAL"
         ));
 
