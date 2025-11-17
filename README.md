@@ -74,7 +74,7 @@ follow these steps:
   Set the bot's username and profile picture.
 - Click **Reset Token** and then **Yes, do it!**.
     - **Save this token**, you will need it later. **Warning: Never share this token with anyone!**
-- On the same page, scroll down to **Privileged Gateway Intents**.
+    - Scroll down to **Privileged Gateway Intents**.
     - Enable **Presence Intent**, **Server Members Intent** and **Message Content Intent**.
 - Click the **OAuth2** tab on the left-hand side menu.
     - Scroll down to the **OAuth2 URL Generator** section.
@@ -84,23 +84,21 @@ follow these steps:
 - Select the server you want to add the bot to and click **Continue**.
     - Click **Authorize**.
     - Complete the captcha and click **Authorize**.
-    - The bot should now be on your Discord server.
+    - The bot should now be on your Discord server. Ensure the bot has the correct permissions.
 
-4. Create a new folder in your server's root directory called `discord_events`.
+4. Create a new folder in your Halo server's root directory called `discord_events`.
+5. Launch `SAPPDiscordBot.exe`
 
-- Launch `SAPPDiscordBot.exe`
-- Enter the Discord Bot Token on the
-- Set your watch directory to the `discord_events` folder
+- Enter the Discord Bot Token you saved earlier.
+- Set your watch directory to the `discord_events` folder you created in step 4.
 - Click **Save Configuration**
-
-5. Click the **Output Configuration** tab
-
+- Click the **Output Configuration** tab
 - Select **Add Server** and enter the exact name of your server defined in init.txt (`sv_name` command in init.txt). A
   new tab will appear with the server name - click it.
-- Set the **General**, **Chat** and **Command** Discord Channel IDs for this server, and repeat for each server you want to add.
+- Set the **General**, **Chat** and **Command** Discord Channel IDs for this server, and repeat for each server you want
+  to add.
 - Click **Save Configuration**
-
-6. Click **Start Bot**
+- Click **Start Bot**
 
 ---
 
