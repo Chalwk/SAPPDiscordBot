@@ -2,7 +2,7 @@
 
 ![Java](https://img.shields.io/badge/Java-17%2B-orange.svg)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
-![SAPPDiscordBot](https://img.shields.io/github/v/release/Chalwk/SAPPDiscordBot?color=blue&label=Version)
+![SAPPDiscordBot](https://img.shields.io/github/v/release/Chalwk/SAPPDiscordBot?color=blue&label=Version&cacheSeconds=0)
 
 A Java application that uses the [JDA API](https://github.com/discord-jda/JDA) to connect Halo SAPP server events to
 Discord, providing real-time alerts, structured embeds, and a GUI interface for monitoring your servers.
