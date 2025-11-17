@@ -4,7 +4,8 @@
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Halo Server Manager](https://img.shields.io/badge/Version-1.0.0-blue.svg)
 
-A Java application that uses the [JDA API](https://github.com/discord-jda/JDA) to connect Halo SAPP server events to Discord, providing real-time alerts, structured embeds, and a GUI interface for monitoring your servers.
+A Java application that uses the [JDA API](https://github.com/discord-jda/JDA) to connect Halo SAPP server events to
+Discord, providing real-time alerts, structured embeds, and a GUI interface for monitoring your servers.
 
 ---
 
@@ -42,10 +43,12 @@ optimized for performance.
 
 ### Download and Installation
 
-1. Download the [latest release](https://github.com/Chalwk/SAPPDiscordBot/releases) from the repository
-2. Download the [discord.lua](https://github.com/Chalwk/SAPPDiscordBot/releases/download/1.0.0/discord.lua) and place it
-   in the server *Lua folder*
-3. Register an application on the [Discord Developer Portal](https://discord.com/developers/applications).
+**1.** Download the [latest release](https://github.com/Chalwk/SAPPDiscordBot/releases) from the repository
+
+**2.** Download the [discord.lua](https://github.com/Chalwk/SAPPDiscordBot/releases/download/1.0.0/discord.lua) and
+place it in the server *Lua folder*
+
+**3.** Register an application on the [Discord Developer Portal](https://discord.com/developers/applications).
 
 There are many tutorials online to help you learn how to create a Discord Application, however, as a general guide,
 follow these steps:
@@ -68,8 +71,9 @@ follow these steps:
     - Complete the captcha and click **Authorize**.
     - The bot should now be on your Discord server. Ensure the bot has the correct permissions.
 
-4. Create a new folder in your Halo server's root directory called `discord_events`.
-5. Launch `SAPPDiscordBot.exe`
+**4.** Create a new folder in your Halo server's root directory called `discord_events`.
+
+**5.** Launch `SAPPDiscordBot.exe`
 
 - Enter the Discord Bot Token you saved earlier.
 - Set your watch directory to the `discord_events` folder you created in step 4.
