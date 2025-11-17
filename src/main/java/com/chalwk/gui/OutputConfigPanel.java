@@ -47,6 +47,12 @@ public class OutputConfigPanel extends JPanel {
         add(serverManagementPanel, BorderLayout.NORTH);
         add(configTabs, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
+
+        // Force initial layout validation
+        SwingUtilities.invokeLater(() -> {
+            revalidate();
+            repaint();
+        });
     }
 
     private JPanel createServerManagementPanel() {
@@ -101,7 +107,7 @@ public class OutputConfigPanel extends JPanel {
         JLabel helpLabel = new JLabel("<html>These channels will be used when no server-specific channels are configured.</html>");
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 2;
+        gbc.gridwidth = 3; // Span all columns
         panel.add(helpLabel, gbc);
 
         String[] channelLabels = {"General Channel ID:", "Chat Channel ID:", "Command Channel ID:"};
@@ -111,26 +117,28 @@ public class OutputConfigPanel extends JPanel {
                 "Default channel for command usage"
         };
 
+        JTextField[] fields = new JTextField[3];
+
         for (int i = 0; i < channelLabels.length; i++) {
+            // Label
             gbc.gridy = i * 2 + 1;
             gbc.gridx = 0;
             gbc.gridwidth = 1;
+            gbc.weightx = 0.0; // Label doesn't expand
             panel.add(new JLabel(channelLabels[i]), gbc);
 
+            // Text field
             gbc.gridx = 1;
-            JTextField field = new JTextField(30);
-            panel.add(field, gbc);
-
-            // Store reference to global fields
-            switch (i) {
-                case 0 -> globalGeneralField = field;
-                case 1 -> globalChatField = field;
-                case 2 -> globalCommandField = field;
-            }
+            gbc.gridwidth = 2;
+            gbc.weightx = 1.0; // Text field expands
+            fields[i] = new JTextField();
+            fields[i].setPreferredSize(new Dimension(200, 25));
+            panel.add(fields[i], gbc);
 
             // Help text
             gbc.gridy = i * 2 + 2;
             gbc.gridx = 1;
+            gbc.gridwidth = 2;
             gbc.insets = new Insets(0, 5, 10, 5);
             JLabel help = new JLabel("<html><i>" + channelHelp[i] + "</i></html>");
             help.setForeground(Color.GRAY);
@@ -138,7 +146,21 @@ public class OutputConfigPanel extends JPanel {
             panel.add(help, gbc);
 
             gbc.insets = new Insets(5, 5, 5, 5); // reset
+            gbc.weightx = 0.0; // reset weight
         }
+
+        // Store references to fields
+        globalGeneralField = fields[0];
+        globalChatField = fields[1];
+        globalCommandField = fields[2];
+
+        // Add filler to push components to top
+        gbc.gridy = channelLabels.length * 2 + 1;
+        gbc.gridx = 0;
+        gbc.gridwidth = 3;
+        gbc.weighty = 1.0; // Take remaining vertical space
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(Box.createVerticalGlue(), gbc);
 
         return panel;
     }
@@ -206,6 +228,12 @@ public class OutputConfigPanel extends JPanel {
         }
 
         updateServerSelector();
+
+        // Force layout update after loading config
+        SwingUtilities.invokeLater(() -> {
+            revalidate();
+            repaint();
+        });
     }
 
     private void saveConfig() {
@@ -245,6 +273,12 @@ public class OutputConfigPanel extends JPanel {
                 addServerTab(serverName);
                 updateServerSelector();
                 serverSelector.setSelectedItem(serverName);
+
+                // Force layout update after adding server
+                SwingUtilities.invokeLater(() -> {
+                    revalidate();
+                    repaint();
+                });
             } else {
                 JOptionPane.showMessageDialog(this, "Server already exists!", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -261,6 +295,12 @@ public class OutputConfigPanel extends JPanel {
             if (result == JOptionPane.YES_OPTION) {
                 removeServerTab(selectedServer);
                 updateServerSelector();
+
+                // Force layout update after removing server
+                SwingUtilities.invokeLater(() -> {
+                    revalidate();
+                    repaint();
+                });
             }
         }
     }
@@ -377,6 +417,12 @@ public class OutputConfigPanel extends JPanel {
             splitPane.setDividerLocation(150);
 
             add(splitPane, BorderLayout.CENTER);
+
+            // Force initial layout validation
+            SwingUtilities.invokeLater(() -> {
+                revalidate();
+                repaint();
+            });
         }
 
         private JPanel createChannelsPanel() {
@@ -395,26 +441,28 @@ public class OutputConfigPanel extends JPanel {
                     "Channel for command usage - overrides global setting"
             };
 
+            JTextField[] fields = new JTextField[3];
+
             for (int i = 0; i < channelLabels.length; i++) {
+                // Label
                 gbc.gridy = i * 2;
                 gbc.gridx = 0;
                 gbc.gridwidth = 1;
+                gbc.weightx = 0.0;
                 panel.add(new JLabel(channelLabels[i]), gbc);
 
+                // Text field
                 gbc.gridx = 1;
-                JTextField field = new JTextField(30);
-                panel.add(field, gbc);
-
-                // Store references
-                switch (i) {
-                    case 0 -> generalField = field;
-                    case 1 -> chatField = field;
-                    case 2 -> commandField = field;
-                }
+                gbc.gridwidth = 2;
+                gbc.weightx = 1.0;
+                fields[i] = new JTextField();
+                fields[i].setPreferredSize(new Dimension(200, 25));
+                panel.add(fields[i], gbc);
 
                 // Help text
                 gbc.gridy = i * 2 + 1;
                 gbc.gridx = 1;
+                gbc.gridwidth = 2;
                 gbc.insets = new Insets(0, 5, 5, 5);
                 JLabel help = new JLabel("<html><i>" + channelHelp[i] + "</i></html>");
                 help.setForeground(Color.GRAY);
@@ -422,7 +470,21 @@ public class OutputConfigPanel extends JPanel {
                 panel.add(help, gbc);
 
                 gbc.insets = new Insets(5, 5, 5, 5); // reset
+                gbc.weightx = 0.0; // reset weight
             }
+
+            // Store references
+            generalField = fields[0];
+            chatField = fields[1];
+            commandField = fields[2];
+
+            // Add filler to push components to top
+            gbc.gridy = channelLabels.length * 2;
+            gbc.gridx = 0;
+            gbc.gridwidth = 3;
+            gbc.weighty = 1.0;
+            gbc.fill = GridBagConstraints.BOTH;
+            panel.add(Box.createVerticalGlue(), gbc);
 
             return panel;
         }
