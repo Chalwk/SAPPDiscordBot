@@ -7,9 +7,7 @@ import com.chalwk.model.RawEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -63,6 +61,9 @@ public class FileWatcher {
             }
         }
 
+        // Clear all existing text files to remove residual events
+        clearExistingTextFiles(directory);
+
         int pollInterval = configManager.getConfig().getPollInterval();
 
         scheduler.scheduleAtFixedRate(this::checkForChanges, 0, pollInterval, TimeUnit.MILLISECONDS);
@@ -71,6 +72,49 @@ public class FileWatcher {
         logger.info("Started watching directory: {}", watchDir);
         logger.info("Poll interval: {} ms", pollInterval);
         logger.info("Watching for .txt files (raw text format)");
+    }
+
+    /**
+     * Clears all existing text files in the watch directory to remove residual events
+     * from previous runs before starting the bot.
+     */
+    private void clearExistingTextFiles(File directory) {
+        try {
+            File[] textFiles = directory.listFiles((dir, name) -> name.endsWith(".txt"));
+
+            if (textFiles == null || textFiles.length == 0) {
+                logger.info("No text files found to clear in directory: {}", directory.getAbsolutePath());
+                return;
+            }
+
+            int clearedCount = 0;
+            for (File file : textFiles) {
+                if (clearFileContent(file)) {
+                    clearedCount++;
+                    logger.info("Cleared residual events from file: {}", file.getName());
+                } else {
+                    logger.warn("Failed to clear file: {}", file.getName());
+                }
+            }
+
+            logger.info("Successfully cleared {} text files to remove residual events", clearedCount);
+
+        } catch (Exception e) {
+            logger.error("Error clearing existing text files", e);
+        }
+    }
+
+    /**
+     * Clears the content of a file by overwriting it with an empty string.
+     */
+    private boolean clearFileContent(File file) {
+        try (FileWriter writer = new FileWriter(file, false)) {
+            writer.write("");
+            return true;
+        } catch (IOException e) {
+            logger.error("Failed to clear file content: {}", file.getName(), e);
+            return false;
+        }
     }
 
     public void stopWatching() {
@@ -98,9 +142,8 @@ public class FileWatcher {
 
             if (files == null) return;
 
-            for (File file : files) {
-                processFileIfChanged(file);
-            }
+            for (File file : files) processFileIfChanged(file);
+
         } catch (Exception e) {
             logger.error("Error checking for file changes", e);
         }
