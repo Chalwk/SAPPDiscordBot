@@ -13,7 +13,7 @@ GUI interface for server monitoring.
 
 |                                                                         |                                                                         |
 |-------------------------------------------------------------------------|-------------------------------------------------------------------------|
-| <img src="https://imgur.com/neqrImQ.png" alt="Preview 1" width="300" /> | <img src="https://imgur.com/hnSGcjS.png" alt="Preview 2" width="300" /> |
+| <img src="https://imgur.com/neqrImQ.png" alt="Preview 1" width="300" /> | <img src="https://imgur.com/mk61022.png" alt="Preview 2" width="300" /> |
 | <img src="https://imgur.com/aoJoIQb.png" alt="Preview 3" width="300" /> | <img src="https://imgur.com/idWJ4fl.png" alt="Preview 4" width="300" /> |
 
 ---
