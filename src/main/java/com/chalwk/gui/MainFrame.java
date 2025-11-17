@@ -3,7 +3,6 @@ package com.chalwk.gui;
 import com.chalwk.SAPPDiscordBot;
 import com.chalwk.config.ConfigManager;
 import com.chalwk.model.DiscordEvent;
-import com.chalwk.util.UpdateChecker;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,7 +23,6 @@ public class MainFrame extends JFrame {
         this.configManager = configManager;
         initializeUI();
         setVisible(true);
-        checkForUpdatesOnStart();
     }
 
     private void initializeUI() {
@@ -58,13 +56,10 @@ public class MainFrame extends JFrame {
         viewMenu.add(refreshItem);
 
         JMenu helpMenu = new JMenu("Help");
-        JMenuItem checkUpdatesItem = new JMenuItem("Check for Updates");
-        checkUpdatesItem.addActionListener(e -> UpdateChecker.checkForUpdates(this));
 
         JMenuItem aboutItem = new JMenuItem("About");
         aboutItem.addActionListener(e -> showAboutDialog());
 
-        helpMenu.add(checkUpdatesItem);
         helpMenu.addSeparator();
         helpMenu.add(aboutItem);
 
@@ -190,12 +185,5 @@ public class MainFrame extends JFrame {
         setVisible(true);
         setExtendedState(JFrame.NORMAL);
         toFront();
-    }
-
-    private void checkForUpdatesOnStart() {
-        // Check for updates after a short delay to ensure UI is fully loaded
-        Timer timer = new Timer(2000, e -> UpdateChecker.checkForUpdatesSilent(this));
-        timer.setRepeats(false);
-        timer.start();
     }
 }

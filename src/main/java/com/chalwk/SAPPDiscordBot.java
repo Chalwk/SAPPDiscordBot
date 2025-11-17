@@ -67,7 +67,6 @@ public class SAPPDiscordBot {
             });
             fileWatcher.startWatching();
 
-            mainFrame.updateStatus(true);
             logger.info("SAPP Discord Bot started successfully");
 
             // Show success message
