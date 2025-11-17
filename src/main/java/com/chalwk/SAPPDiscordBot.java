@@ -61,9 +61,7 @@ public class SAPPDiscordBot {
 
             // Initialize file watcher with UI listener that includes server name
             fileWatcher = new FileWatcher(configManager, discordBot, eventProcessor);
-            fileWatcher.setEventListener((event, serverName) -> {
-                mainFrame.addEventLog(event, serverName, "Processed");
-            });
+            fileWatcher.setEventListener((event, serverName) -> mainFrame.addEventLog(event, serverName, "Processed"));
             fileWatcher.startWatching();
 
             mainFrame.updateStatus(true);

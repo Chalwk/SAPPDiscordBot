@@ -10,10 +10,10 @@ public class AppConfig {
     private boolean autoStart = false;
 
     // Channel configuration
-    private Map<String, String> channels = new HashMap<>();
+    private final Map<String, String> channels = new HashMap<>();
 
     // Event templates configuration
-    private Map<String, EventConfig> eventConfigs = new HashMap<>();
+    private final Map<String, EventConfig> eventConfigs = new HashMap<>();
 
     public AppConfig() {
         initializeDefaults();
@@ -150,16 +150,8 @@ public class AppConfig {
         return channels;
     }
 
-    public void setChannels(Map<String, String> channels) {
-        this.channels = channels;
-    }
-
     public Map<String, EventConfig> getEventConfigs() {
         return eventConfigs;
-    }
-
-    public void setEventConfigs(Map<String, EventConfig> eventConfigs) {
-        this.eventConfigs = eventConfigs;
     }
 
     public String getDiscordToken() {

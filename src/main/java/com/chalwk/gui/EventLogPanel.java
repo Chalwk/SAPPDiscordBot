@@ -18,7 +18,6 @@ public class EventLogPanel extends JPanel {
     private final EventTableModel tableModel;
     private final JTable eventTable;
     private final JCheckBox autoScrollCheckbox;
-    private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
     public EventLogPanel() {
         setLayout(new BorderLayout());

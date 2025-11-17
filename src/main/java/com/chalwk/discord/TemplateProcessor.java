@@ -30,7 +30,7 @@ public class TemplateProcessor {
                 case "gt" -> data.get("gametype");
                 case "killerName" -> data.get("killer_name");
                 case "victimName" -> data.get("victim_name");
-                default -> value;
+                default -> null;
             };
         }
         return value != null ? value.toString() : "[MISSING:" + placeholder + "]";
