@@ -2,7 +2,7 @@
 
 ![Java](https://img.shields.io/badge/Java-17%2B-orange.svg)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
-![Halo Server Manager](https://img.shields.io/badge/Version-1.0.0-blue.svg)
+![SAPPDiscordBot](https://img.shields.io/github/v/release/Chalwk/SAPPDiscordBot?color=blue&label=Version)
 
 A Java application that uses the [JDA API](https://github.com/discord-jda/JDA) to connect Halo SAPP server events to
 Discord, providing real-time alerts, structured embeds, and a GUI interface for monitoring your servers.
@@ -30,9 +30,9 @@ optimized for performance.
 ## System Requirements
 
 - Must have Java 17 installed.
-  - For Windows users, you can
-  download [Java 17 here](https://www.oracle.com/java/technologies/downloads/#jdk17-windows).
-  - For Linux users, run this command in your terminal: `sudo apt install openjdk-17-jre-headless`
+    - For Windows users, you can
+      download [Java 17 here](https://www.oracle.com/java/technologies/downloads/#jdk17-windows).
+    - For Linux users, run this command in your terminal: `sudo apt install openjdk-17-jre-headless`
 
 * 512MB RAM
 * 50MB storage
@@ -57,18 +57,18 @@ Follow these steps:
 - Click the **Bot** tab on the left-hand side menu.
   Set the bot's username and profile picture.
 - Click **Reset Token** and then **Yes, do it!**.
-  - **Save this token**, you will need it later. **Warning: Never share this token with anyone!**
-  - Scroll down to **Privileged Gateway Intents**.
-  - Enable **Presence Intent**, **Server Members Intent** and **Message Content Intent**.
+    - **Save this token**, you will need it later. **Warning: Never share this token with anyone!**
+    - Scroll down to **Privileged Gateway Intents**.
+    - Enable **Presence Intent**, **Server Members Intent** and **Message Content Intent**.
 - Click the **OAuth2** tab on the left-hand side menu.
-  - Scroll down to the **OAuth2 URL Generator** section.
-  - Under **Scopes**, select **bot**.
-  - Under **Bot Permissions**, select **Administrator**
-  - Copy the URL that gets generated and paste it into your browser.
+    - Scroll down to the **OAuth2 URL Generator** section.
+    - Under **Scopes**, select **bot**.
+    - Under **Bot Permissions**, select **Administrator**
+    - Copy the URL that gets generated and paste it into your browser.
 - Select the server you want to add the bot to and click **Continue**.
-  - Click **Authorize**.
-  - Complete the captcha and click **Authorize**.
-  - The bot should now be on your Discord server. Ensure the bot has the correct permissions.
+    - Click **Authorize**.
+    - Complete the captcha and click **Authorize**.
+    - The bot should now be on your Discord server. Ensure the bot has the correct permissions.
 
 **4.** Create a new folder in your Halo server's root directory called `discord_events`.
 
