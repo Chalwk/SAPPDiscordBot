@@ -7,7 +7,7 @@
 
     <groupId>com.chalwk</groupId>
     <artifactId>SAPPDiscordBot</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -41,6 +41,7 @@
 
     <build>
         <plugins>
+            <!-- Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -50,6 +51,8 @@
                     <target>14</target>
                 </configuration>
             </plugin>
+
+            <!-- Assembly Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -58,6 +61,7 @@
                     <archive>
                         <manifest>
                             <mainClass>com.chalwk.SAPPDiscordBot</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -76,7 +80,7 @@
                 </executions>
             </plugin>
 
-            <!-- Launch4j Maven Plugin -->
+            <!-- Launch4j Plugin -->
             <plugin>
                 <groupId>com.akathist.maven.plugins.launch4j</groupId>
                 <artifactId>launch4j-maven-plugin</artifactId>
@@ -103,12 +107,12 @@
                                 <runtimeBits>64/32</runtimeBits>
                             </jre>
                             <versionInfo>
-                                <fileVersion>1.0.0.0</fileVersion>
-                                <txtFileVersion>1.0.0.0</txtFileVersion>
+                                <fileVersion>1.0.1.0</fileVersion>
+                                <txtFileVersion>1.0.1.0</txtFileVersion>
                                 <fileDescription>SAPP Discord Bot</fileDescription>
                                 <copyright>2025 Jericho Crosby (Chalwk)</copyright>
-                                <productVersion>1.0.0.0</productVersion>
-                                <txtProductVersion>1.0.0.0</txtProductVersion>
+                                <productVersion>1.0.1.0</productVersion>
+                                <txtProductVersion>1.0.1.0</txtProductVersion>
                                 <productName>SAPP Discord Bot</productName>
                                 <companyName>JeriCraft</companyName>
                                 <internalName>SAPPDiscordBot</internalName>

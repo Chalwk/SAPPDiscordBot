@@ -175,14 +175,18 @@ public class MainFrame extends JFrame {
     }
 
     private void showAboutDialog() {
+        String version = MainFrame.class.getPackage().getImplementationVersion();
+        if (version == null) version = "Unknown"; // fallback just in case
+
         JOptionPane.showMessageDialog(this,
-                "SAPP Discord Bot v1.0.0\n\n" +
+                "SAPP Discord Bot v" + version + "\n\n" +
                         "Advanced Halo server event monitoring and Discord integration.\n" +
                         "Supports all event types including embeds with fields and colors.\n\n" +
                         "Copyright © 2025 Jericho Crosby (Chalwk)",
                 "About",
                 JOptionPane.INFORMATION_MESSAGE);
     }
+
 
     public void restoreFromTray() {
         setVisible(true);
