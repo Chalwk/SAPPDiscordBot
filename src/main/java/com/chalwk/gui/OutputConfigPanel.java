@@ -2,24 +2,28 @@ package com.chalwk.gui;
 
 import com.chalwk.config.AppConfig;
 import com.chalwk.config.ConfigManager;
-import com.chalwk.config.EventConfig;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.util.HashMap;
 import java.util.Map;
 
 public class OutputConfigPanel extends JPanel {
 
     private final ConfigManager configManager;
+    private final Map<String, ServerChannelPanel> serverPanels;
+    private JTabbedPane channelTabs;
+    private JComboBox<String> serverSelector;
 
-    private JTextField generalChannelField;
-    private JTextField chatChannelField;
-    private JTextField commandChannelField;
+    // Global channel fields
+    private JTextField globalGeneralField;
+    private JTextField globalChatField;
+    private JTextField globalCommandField;
 
     public OutputConfigPanel(ConfigManager configManager) {
         this.configManager = configManager;
+        this.serverPanels = new HashMap<>();
         initializeUI();
         loadConfig();
     }
@@ -28,17 +32,110 @@ public class OutputConfigPanel extends JPanel {
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        JTabbedPane tabbedPane = new JTabbedPane();
+        // Server management panel
+        JPanel serverManagementPanel = createServerManagementPanel();
 
-        // Channels Tab
-        tabbedPane.addTab("Channels", createChannelsPanel());
+        // Channel tabs
+        channelTabs = new JTabbedPane();
 
-        // Events Tab
-        tabbedPane.addTab("Events", createEventsPanel());
-        add(tabbedPane, BorderLayout.CENTER);
+        // Global channels tab (for default/fallback)
+        channelTabs.addTab("Global Channels", createGlobalChannelsPanel());
 
         // Buttons Panel
+        JPanel buttonPanel = createButtonPanel();
+
+        add(serverManagementPanel, BorderLayout.NORTH);
+        add(channelTabs, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    private JPanel createServerManagementPanel() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panel.setBorder(BorderFactory.createTitledBorder("Server Management"));
+
+        panel.add(new JLabel("Manage Servers:"));
+
+        serverSelector = new JComboBox<>();
+        serverSelector.setPreferredSize(new Dimension(150, 25));
+        serverSelector.addActionListener(e -> updateServerTabs());
+        panel.add(serverSelector);
+
+        JButton addServerButton = new JButton("Add Server");
+        addServerButton.addActionListener(e -> addNewServer());
+        panel.add(addServerButton);
+
+        JButton removeServerButton = new JButton("Remove Server");
+        removeServerButton.addActionListener(e -> removeCurrentServer());
+        panel.add(removeServerButton);
+
+        return panel;
+    }
+
+    private JPanel createGlobalChannelsPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Global channels configuration
+        JLabel helpLabel = new JLabel("<html><b>Global Channels (Fallback):</b><br>" +
+                "These channels will be used when no server-specific channels are configured.</html>");
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        panel.add(helpLabel, gbc);
+
+        String[] channelLabels = {"General Channel ID:", "Chat Channel ID:", "Command Channel ID:"};
+        String[] channelHelp = {
+                "Default channel for game events (joins, deaths, scores)",
+                "Default channel for chat messages",
+                "Default channel for command usage"
+        };
+
+        for (int i = 0; i < channelLabels.length; i++) {
+            gbc.gridy = i * 2 + 1;
+            gbc.gridx = 0;
+            gbc.gridwidth = 1;
+            panel.add(new JLabel(channelLabels[i]), gbc);
+
+            gbc.gridx = 1;
+            JTextField field = new JTextField(30);
+            panel.add(field, gbc);
+
+            // Store reference to global fields
+            switch (i) {
+                case 0 -> globalGeneralField = field;
+                case 1 -> globalChatField = field;
+                case 2 -> globalCommandField = field;
+            }
+
+            // Help text
+            gbc.gridy = i * 2 + 2;
+            gbc.gridx = 1;
+            gbc.insets = new Insets(0, 5, 10, 5);
+            JLabel help = new JLabel("<html><i>" + channelHelp[i] + "</i></html>");
+            help.setForeground(Color.GRAY);
+            help.setFont(help.getFont().deriveFont(10f));
+            panel.add(help, gbc);
+
+            gbc.insets = new Insets(5, 5, 5, 5); // reset
+        }
+
+        return panel;
+    }
+
+    private ServerChannelPanel createServerChannelsPanel(String serverName) {
+        ServerChannelPanel panel = new ServerChannelPanel(serverName);
+        serverPanels.put(serverName, panel);
+        return panel;
+    }
+
+    private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
         JButton saveButton = createStyledButton("Save Configuration", new Color(46, 125, 50));
         JButton resetButton = createStyledButton("Reset to Defaults", new Color(198, 40, 40));
 
@@ -50,77 +147,8 @@ public class OutputConfigPanel extends JPanel {
 
         buttonPanel.add(saveButton);
         buttonPanel.add(resetButton);
-        add(buttonPanel, BorderLayout.SOUTH);
-    }
 
-    private JPanel createChannelsPanel() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        // General Channel
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(new JLabel("General Channel ID:"), gbc);
-        gbc.gridx = 1;
-        generalChannelField = new JTextField(30);
-        panel.add(generalChannelField, gbc);
-
-        // Chat Channel
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        panel.add(new JLabel("Chat Channel ID:"), gbc);
-        gbc.gridx = 1;
-        chatChannelField = new JTextField(30);
-        panel.add(chatChannelField, gbc);
-
-        // Command Channel
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        panel.add(new JLabel("Command Channel ID:"), gbc);
-        gbc.gridx = 1;
-        commandChannelField = new JTextField(30);
-        panel.add(commandChannelField, gbc);
-
-        // Help text
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 2;
-        JLabel helpLabel = new JLabel("<html><i>Enter Discord channel IDs where different types of events will be sent.</i></html>");
-        helpLabel.setForeground(Color.GRAY);
-        panel.add(helpLabel, gbc);
-
-        return panel;
-    }
-
-    private JPanel createEventsPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-
-        // Create table model for events
-        String[] columnNames = {"Enable", "Event", "Template", "Color", "Embed", "Channel"};
-        EventTableModel model = new EventTableModel(columnNames);
-
-        // Populate with events
-        AppConfig config = configManager.getConfig();
-        for (Map.Entry<String, EventConfig> entry : config.getEventConfigs().entrySet()) {
-            model.addEvent(entry.getKey(), entry.getValue());
-        }
-
-        JTable table = new JTable(model);
-        table.setRowHeight(25);
-        table.getColumnModel().getColumn(2).setPreferredWidth(300);
-
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBorder(new TitledBorder("Event Configuration"));
-
-        panel.add(scrollPane, BorderLayout.CENTER);
-
-        // Remove the quick templates panel - no longer needed
-        return panel;
+        return buttonPanel;
     }
 
     private JButton createStyledButton(String text, Color bgColor) {
@@ -133,19 +161,55 @@ public class OutputConfigPanel extends JPanel {
 
     private void loadConfig() {
         AppConfig config = configManager.getConfig();
-        generalChannelField.setText(config.getChannels().get("GENERAL"));
-        chatChannelField.setText(config.getChannels().get("CHAT"));
-        commandChannelField.setText(config.getChannels().get("COMMAND"));
+
+        // Load global channels
+        globalGeneralField.setText(config.getChannels().get("GENERAL"));
+        globalChatField.setText(config.getChannels().get("CHAT"));
+        globalCommandField.setText(config.getChannels().get("COMMAND"));
+
+        // Find all server-specific channels and create tabs for them
+        for (String key : config.getChannels().keySet()) {
+            if (key.contains("_")) {
+                String[] parts = key.split("_");
+                if (parts.length >= 2) {
+                    String serverName = parts[0];
+                    String channelType = parts[1];
+
+                    if (!serverPanels.containsKey(serverName)) {
+                        addServerTab(serverName);
+                    }
+
+                    ServerChannelPanel panel = serverPanels.get(serverName);
+                    switch (channelType) {
+                        case "GENERAL" -> panel.getGeneralField().setText(config.getChannels().get(key));
+                        case "CHAT" -> panel.getChatField().setText(config.getChannels().get(key));
+                        case "COMMAND" -> panel.getCommandField().setText(config.getChannels().get(key));
+                    }
+                }
+            }
+        }
+
+        updateServerSelector();
     }
 
     private void saveConfig() {
         try {
             AppConfig config = configManager.getConfig();
 
-            // Save channels
-            config.getChannels().put("GENERAL", generalChannelField.getText().trim());
-            config.getChannels().put("CHAT", chatChannelField.getText().trim());
-            config.getChannels().put("COMMAND", commandChannelField.getText().trim());
+            // Save global channels
+            config.getChannels().put("GENERAL", globalGeneralField.getText().trim());
+            config.getChannels().put("CHAT", globalChatField.getText().trim());
+            config.getChannels().put("COMMAND", globalCommandField.getText().trim());
+
+            // Save server-specific channels
+            for (Map.Entry<String, ServerChannelPanel> entry : serverPanels.entrySet()) {
+                String serverName = entry.getKey();
+                ServerChannelPanel panel = entry.getValue();
+
+                config.getChannels().put(serverName + "_GENERAL", panel.getGeneralField().getText().trim());
+                config.getChannels().put(serverName + "_CHAT", panel.getChatField().getText().trim());
+                config.getChannels().put(serverName + "_COMMAND", panel.getCommandField().getText().trim());
+            }
 
             configManager.saveConfig(config);
             JOptionPane.showMessageDialog(this, "Configuration saved!", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -154,9 +218,75 @@ public class OutputConfigPanel extends JPanel {
         }
     }
 
+    private void addNewServer() {
+        String serverName = JOptionPane.showInputDialog(this, "Enter server name:", "Add New Server", JOptionPane.QUESTION_MESSAGE);
+        if (serverName != null && !serverName.trim().isEmpty()) {
+            serverName = serverName.trim();
+            if (!serverPanels.containsKey(serverName)) {
+                addServerTab(serverName);
+                updateServerSelector();
+                serverSelector.setSelectedItem(serverName);
+            } else {
+                JOptionPane.showMessageDialog(this, "Server already exists!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void removeCurrentServer() {
+        String selectedServer = (String) serverSelector.getSelectedItem();
+        if (selectedServer != null && !selectedServer.equals("Global")) {
+            int result = JOptionPane.showConfirmDialog(this,
+                    "Remove server '" + selectedServer + "' and all its channel configurations?",
+                    "Confirm Removal", JOptionPane.YES_NO_OPTION);
+
+            if (result == JOptionPane.YES_OPTION) {
+                removeServerTab(selectedServer);
+                updateServerSelector();
+            }
+        }
+    }
+
+    private void addServerTab(String serverName) {
+        ServerChannelPanel panel = createServerChannelsPanel(serverName);
+        channelTabs.addTab(serverName, panel);
+        serverPanels.put(serverName, panel);
+    }
+
+    private void removeServerTab(String serverName) {
+        ServerChannelPanel panel = serverPanels.remove(serverName);
+        if (panel != null) {
+            channelTabs.remove(panel);
+        }
+    }
+
+    private void updateServerSelector() {
+        serverSelector.removeAllItems();
+        serverSelector.addItem("Global");
+        for (String serverName : serverPanels.keySet()) {
+            serverSelector.addItem(serverName);
+        }
+    }
+
+    private void updateServerTabs() {
+        String selected = (String) serverSelector.getSelectedItem();
+        if (selected != null) {
+            if (selected.equals("Global")) {
+                channelTabs.setSelectedIndex(0);
+            } else {
+                // Find the tab index for this server
+                for (int i = 1; i < channelTabs.getTabCount(); i++) {
+                    if (channelTabs.getTitleAt(i).equals(selected)) {
+                        channelTabs.setSelectedIndex(i);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     private void resetConfig() {
         int result = JOptionPane.showConfirmDialog(this,
-                "Are you sure you want to reset output configuration to defaults? This will reset all channel IDs and event templates.",
+                "Are you sure you want to reset output configuration to defaults? This will reset all channel IDs.",
                 "Confirm Reset",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE);
@@ -164,8 +294,6 @@ public class OutputConfigPanel extends JPanel {
         if (result == JOptionPane.YES_OPTION) {
             try {
                 AppConfig config = configManager.getConfig();
-
-                // Reset only output configuration (channels and event configs)
                 AppConfig defaultConfig = new AppConfig();
 
                 // Reset channels to defaults
@@ -193,84 +321,84 @@ public class OutputConfigPanel extends JPanel {
         }
     }
 
-    private static class EventTableRow {
-        String eventName;
-        EventConfig config;
+    // Custom panel for server channels
+    private static class ServerChannelPanel extends JPanel {
+        private final String serverName;
+        private JTextField generalField;
+        private JTextField chatField;
+        private JTextField commandField;
 
-        EventTableRow(String eventName, EventConfig config) {
-            this.eventName = eventName;
-            this.config = config;
-        }
-    }
-
-    // Table model for events
-    private static class EventTableModel extends javax.swing.table.AbstractTableModel {
-        private final String[] columnNames;
-        private final java.util.List<EventTableRow> data = new java.util.ArrayList<>();
-
-        public EventTableModel(String[] columnNames) {
-            this.columnNames = columnNames;
+        public ServerChannelPanel(String serverName) {
+            this.serverName = serverName;
+            initializeUI();
         }
 
-        public void addEvent(String eventName, EventConfig config) {
-            data.add(new EventTableRow(eventName, config));
-        }
+        private void initializeUI() {
+            setLayout(new GridBagLayout());
+            setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        @Override
-        public int getRowCount() {
-            return data.size();
-        }
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(5, 5, 5, 5);
+            gbc.anchor = GridBagConstraints.WEST;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        @Override
-        public int getColumnCount() {
-            return columnNames.length;
-        }
+            // Server header
+            JLabel headerLabel = new JLabel("<html><b>Server: " + serverName + "</b><br>" +
+                    "Configure Discord channels specifically for this Halo server.</html>");
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.gridwidth = 2;
+            add(headerLabel, gbc);
 
-        @Override
-        public String getColumnName(int col) {
-            return columnNames[col];
-        }
-
-        @Override
-        public Class<?> getColumnClass(int col) {
-            return switch (col) {
-                case 0 -> Boolean.class; // Enable
-                case 3, 5 -> String.class; // Color, Channel
-                case 4 -> Boolean.class; // Embed
-                default -> String.class;
+            // Channel fields
+            String[] channelLabels = {"General Channel ID:", "Chat Channel ID:", "Command Channel ID:"};
+            String[] channelHelp = {
+                    "Channel for game events (joins, deaths, scores) - overrides global setting",
+                    "Channel for chat messages - overrides global setting",
+                    "Channel for command usage - overrides global setting"
             };
-        }
 
-        @Override
-        public boolean isCellEditable(int row, int col) {
-            return true;
-        }
+            for (int i = 0; i < channelLabels.length; i++) {
+                gbc.gridy = i * 2 + 1;
+                gbc.gridx = 0;
+                gbc.gridwidth = 1;
+                add(new JLabel(channelLabels[i]), gbc);
 
-        @Override
-        public Object getValueAt(int row, int col) {
-            EventTableRow eventRow = data.get(row);
-            return switch (col) {
-                case 0 -> eventRow.config.isEnabled();
-                case 1 -> eventRow.eventName;
-                case 2 -> eventRow.config.getTemplate();
-                case 3 -> eventRow.config.getColor();
-                case 4 -> eventRow.config.isUseEmbed();
-                case 5 -> eventRow.config.getChannelId();
-                default -> null;
-            };
-        }
+                gbc.gridx = 1;
+                JTextField field = new JTextField(30);
+                add(field, gbc);
 
-        @Override
-        public void setValueAt(Object value, int row, int col) {
-            EventTableRow eventRow = data.get(row);
-            switch (col) {
-                case 0 -> eventRow.config.setEnabled((Boolean) value);
-                case 2 -> eventRow.config.setTemplate((String) value);
-                case 3 -> eventRow.config.setColor((String) value);
-                case 4 -> eventRow.config.setUseEmbed((Boolean) value);
-                case 5 -> eventRow.config.setChannelId((String) value);
+                // Store references
+                switch (i) {
+                    case 0 -> generalField = field;
+                    case 1 -> chatField = field;
+                    case 2 -> commandField = field;
+                }
+
+                // Help text
+                gbc.gridy = i * 2 + 2;
+                gbc.gridx = 1;
+                gbc.insets = new Insets(0, 5, 10, 5);
+                JLabel help = new JLabel("<html><i>" + channelHelp[i] + "</i></html>");
+                help.setForeground(Color.GRAY);
+                help.setFont(help.getFont().deriveFont(10f));
+                add(help, gbc);
+
+                gbc.insets = new Insets(5, 5, 5, 5); // reset
             }
-            fireTableCellUpdated(row, col);
+        }
+
+        // Getters
+        public JTextField getGeneralField() {
+            return generalField;
+        }
+
+        public JTextField getChatField() {
+            return chatField;
+        }
+
+        public JTextField getCommandField() {
+            return commandField;
         }
     }
 }

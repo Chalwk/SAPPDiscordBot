@@ -26,7 +26,7 @@ public class EventProcessor {
         this.eventListener = listener;
     }
 
-    public void processRawEvent(RawEvent rawEvent, DiscordBot discordBot) {
+    public void processRawEvent(RawEvent rawEvent, DiscordBot discordBot, String serverName) {
         String eventType = rawEvent.getEvent_type();
         String subtype = rawEvent.getSubtype();
 
@@ -42,12 +42,13 @@ public class EventProcessor {
             return;
         }
 
-        // Get actual channel ID from channel mapping
+        // Get channel ID with server-specific fallback logic
         String channelType = eventConfig.getChannelId();
-        String channelId = configManager.getConfig().getChannels().get(channelType);
+        String channelId = getChannelIdForServer(serverName, channelType);
 
         if (channelId == null || channelId.trim().isEmpty()) {
-            return; // Channel not configured
+            logger.debug("No channel configured for server '{}' and type '{}'", serverName, channelType);
+            return;
         }
 
         // Process template with event data
@@ -64,8 +65,21 @@ public class EventProcessor {
 
         // Notify UI
         if (eventListener != null) {
-            eventListener.onEventProcessed(rawEvent);
+            eventListener.onEventProcessed(rawEvent, serverName);
         }
+    }
+
+    private String getChannelIdForServer(String serverName, String channelType) {
+        // First try server-specific channel
+        String serverChannelKey = serverName + "_" + channelType;
+        String channelId = configManager.getConfig().getChannels().get(serverChannelKey);
+
+        // If server-specific channel not configured, fall back to global channel
+        if (channelId == null || channelId.trim().isEmpty()) {
+            channelId = configManager.getConfig().getChannels().get(channelType);
+        }
+
+        return channelId;
     }
 
     private void sendEmbed(String channelId, String description, String colorName, DiscordBot discordBot) {
@@ -102,6 +116,6 @@ public class EventProcessor {
     }
 
     public interface EventListener {
-        void onEventProcessed(RawEvent event);
+        void onEventProcessed(RawEvent event, String serverName);  // Changed to accept serverName
     }
 }

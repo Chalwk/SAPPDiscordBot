@@ -188,12 +188,15 @@ public class FileWatcher {
             // Extract server name from filename (remove .txt extension)
             String serverName = file.getName().replace(".txt", "");
 
+            // Ensure server channels exist in config
+            configManager.getConfig().ensureServerChannels(serverName);
+
             // Process events
             for (RawEvent event : eventsToProcess) {
                 String eventHash = generateEventHash(event);
 
-                // Process the raw event
-                eventProcessor.processRawEvent(event, discordBot);
+                // Process the raw event with server name
+                eventProcessor.processRawEvent(event, discordBot, serverName);
 
                 // Mark as successfully processed
                 state.processedEventHashes.add(eventHash);

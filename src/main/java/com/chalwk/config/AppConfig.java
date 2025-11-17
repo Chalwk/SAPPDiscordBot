@@ -185,4 +185,14 @@ public class AppConfig {
     public void setAutoStart(boolean autoStart) {
         this.autoStart = autoStart;
     }
+
+    public void ensureServerChannels(String serverName) {
+        String[] channelTypes = {"GENERAL", "CHAT", "COMMAND"};
+        for (String channelType : channelTypes) {
+            String serverChannelKey = serverName + "_" + channelType;
+            if (!channels.containsKey(serverChannelKey)) {
+                channels.put(serverChannelKey, ""); // Initialize empty
+            }
+        }
+    }
 }
