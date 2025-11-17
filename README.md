@@ -30,9 +30,9 @@ optimized for performance.
 ## System Requirements
 
 - Must have Java 17 installed.
-    - For Windows users, you can
-      download [Java 17 here](https://www.oracle.com/java/technologies/downloads/#jdk17-windows).
-    - For Linux users, run this command in your terminal: `sudo apt install openjdk-17-jre-headless`
+  - For Windows users, you can
+  download [Java 17 here](https://www.oracle.com/java/technologies/downloads/#jdk17-windows).
+  - For Linux users, run this command in your terminal: `sudo apt install openjdk-17-jre-headless`
 
 * 512MB RAM
 * 50MB storage
@@ -50,26 +50,25 @@ place it in the server *Lua folder*
 
 **3.** Register an application on the [Discord Developer Portal](https://discord.com/developers/applications).
 
-There are many tutorials online to help you learn how to create a Discord Application, however, as a general guide,
-follow these steps:
+Follow these steps:
 
 - Click **New Application**.
   Provide a name for your bot and click **create**.
 - Click the **Bot** tab on the left-hand side menu.
   Set the bot's username and profile picture.
 - Click **Reset Token** and then **Yes, do it!**.
-    - **Save this token**, you will need it later. **Warning: Never share this token with anyone!**
-    - Scroll down to **Privileged Gateway Intents**.
-    - Enable **Presence Intent**, **Server Members Intent** and **Message Content Intent**.
+  - **Save this token**, you will need it later. **Warning: Never share this token with anyone!**
+  - Scroll down to **Privileged Gateway Intents**.
+  - Enable **Presence Intent**, **Server Members Intent** and **Message Content Intent**.
 - Click the **OAuth2** tab on the left-hand side menu.
-    - Scroll down to the **OAuth2 URL Generator** section.
-    - Under **Scopes**, select **bot**.
-    - Under **Bot Permissions**, select **Administrator**
-    - Copy the URL that gets generated and paste it into your browser.
+  - Scroll down to the **OAuth2 URL Generator** section.
+  - Under **Scopes**, select **bot**.
+  - Under **Bot Permissions**, select **Administrator**
+  - Copy the URL that gets generated and paste it into your browser.
 - Select the server you want to add the bot to and click **Continue**.
-    - Click **Authorize**.
-    - Complete the captcha and click **Authorize**.
-    - The bot should now be on your Discord server. Ensure the bot has the correct permissions.
+  - Click **Authorize**.
+  - Complete the captcha and click **Authorize**.
+  - The bot should now be on your Discord server. Ensure the bot has the correct permissions.
 
 **4.** Create a new folder in your Halo server's root directory called `discord_events`.
 
