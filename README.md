@@ -72,7 +72,7 @@ Follow these steps:
 
 **4.** Create a new folder in your Halo server's root directory called `discord_events`.
 
-**5.** Launch `SAPPDiscordBot.exe`
+**5.** Launch `SAPPDiscordBot.exe` (or `SAPPDiscordBot.jar` on Linux)
 
 - Enter the Discord Bot Token you saved earlier.
 - Set your watch directory to the `discord_events` folder you created in step 4.
@@ -100,7 +100,7 @@ Follow these steps:
 
 ## Technical Notes:
 
-The `SAPPDiscordBot.exe` application will create a file called `sapp_bot_config.json` in the same directory as the
+The `SAPPDiscordBot.exe / SAPPDiscordBot.jar` application will create a file called `sapp_bot_config.json` in the same directory as the
 application. This file contains the configuration for the bot, including the Discord Bot Token, watch directory, and
 server configurations.
 
