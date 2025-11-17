@@ -56,10 +56,6 @@ optimized for performance.
 
 ### Download and Installation
 
-- Run `SAPPDiscordBot.exe`
-- Enter your Discord Bot Token
-- Set your watch directory
-
 1. Download the [latest release](https://github.com/Chalwk/SAPPDiscordBot/releases) from the repository
 2. Download the [discord.lua](https://github.com/Chalwk/SAPPDiscordBot/releases/download/1.0.0/discord.lua) and place it
    in the server *Lua folder*
