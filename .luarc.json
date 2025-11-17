@@ -48,10 +48,10 @@
     "write_vector3d",
     "write_word",
     "register_callback",
-        "write_short",
-        "read_int",
-        "bit",
-        "safe_read",
-        "powerup_interact"
+    "write_short",
+    "read_int",
+    "bit",
+    "safe_read",
+    "powerup_interact"
   ]
 }
