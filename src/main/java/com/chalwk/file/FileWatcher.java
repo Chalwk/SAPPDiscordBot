@@ -74,9 +74,7 @@ public class FileWatcher {
     }
 
     public void stopWatching() {
-        if (!isWatching) {
-            return;
-        }
+        if (!isWatching) return;
 
         scheduler.shutdown();
         try {
@@ -141,9 +139,8 @@ public class FileWatcher {
         try {
             List<RawEvent> eventsToProcess = parseRawTextEvents(file, state);
 
-            if (eventsToProcess.isEmpty()) {
-                return; // No events to process
-            }
+            // No events to process
+            if (eventsToProcess.isEmpty()) return;
 
             // Extract server name from filename (remove .txt extension)
             String serverName = file.getName().replace(".txt", "");
