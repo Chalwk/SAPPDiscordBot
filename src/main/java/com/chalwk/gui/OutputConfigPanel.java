@@ -42,6 +42,9 @@ public class OutputConfigPanel extends JPanel {
         JButton saveButton = createStyledButton("Save Configuration", new Color(46, 125, 50));
         JButton resetButton = createStyledButton("Reset to Defaults", new Color(198, 40, 40));
 
+        saveButton.setForeground(Color.BLACK);
+        resetButton.setForeground(Color.BLACK);
+
         saveButton.addActionListener(e -> saveConfig());
         resetButton.addActionListener(e -> resetConfig());
 
