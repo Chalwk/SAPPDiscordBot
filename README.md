@@ -68,11 +68,10 @@ Follow these steps:
     - Under **Bot Permissions**, select **Administrator**
     - Copy the URL that gets generated and paste it into your browser.
 - Select the server you want to add the bot to and click **Continue**.
-    - Click **Authorize**.
     - Complete the captcha and click **Authorize**.
     - The bot should now be on your Discord server. Ensure the bot has the correct permissions.
 
-### ⚠️ Warning: Never share the Discord Bot Token with anyone!
+> ⚠️ Warning: Never share the Discord Bot Token with anyone!
 
 **4.** Create a new folder in your Halo server's root directory called `discord_events`.
 
