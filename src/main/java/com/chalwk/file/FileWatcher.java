@@ -17,6 +17,9 @@ public class FileWatcher {
 
     private static final Logger logger = LoggerFactory.getLogger(FileWatcher.class);
 
+    // Default maximum file size (10MB)
+    private static final long DEFAULT_MAX_FILE_SIZE = 10 * 1024 * 1024;
+
     private final ConfigManager configManager;
     private final DiscordBot discordBot;
     private final EventProcessor eventProcessor;
@@ -72,6 +75,14 @@ public class FileWatcher {
         logger.info("Started watching directory: {}", watchDir);
         logger.info("Poll interval: {} ms", pollInterval);
         logger.info("Watching for .txt files (raw text format)");
+        logger.info("Maximum file size: {} bytes ({} MB)", getMaxFileSize(), getMaxFileSize() / (1024 * 1024));
+    }
+
+    /**
+     * Gets the maximum file size from config or uses default
+     */
+    private long getMaxFileSize() {
+        return DEFAULT_MAX_FILE_SIZE;
     }
 
     /**
@@ -154,6 +165,20 @@ public class FileWatcher {
             String filePath = file.getAbsolutePath();
             long lastModified = file.lastModified();
             long fileSize = file.length();
+
+            // Check if file is too large and clear it if needed
+            if (fileSize > getMaxFileSize()) {
+                logger.warn("File {} is too large ({} bytes > {} bytes). Clearing content.",
+                        file.getName(), fileSize, getMaxFileSize());
+                if (clearFileContent(file)) {
+                    // Remove the file state so it will be treated as a new file
+                    fileStates.remove(filePath);
+                    logger.info("Successfully cleared oversized file: {}", file.getName());
+                } else {
+                    logger.error("Failed to clear oversized file: {}", file.getName());
+                }
+                return;
+            }
 
             FileState state = fileStates.get(filePath);
 
