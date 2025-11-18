@@ -73,9 +73,13 @@ jobs:
           "@ | Out-File -FilePath $settingsPath -Encoding UTF8
 
       - name: Publish to GitHub Packages
-        # ensure shell expands $HOME consistently
-        shell: bash
-        run: mvn -B -s "$HOME/.m2/settings.xml" deploy
+        # use PowerShell so $HOME/.m2/settings.xml is the same file we created above
+        shell: pwsh
+        run: |
+          # Use the Windows-compatible path variable to point maven to the settings.xml we created
+          $settings = Join-Path $HOME ".m2\settings.xml"
+          Write-Host "Using settings file: $settings"
+          & mvn -B -s $settings deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
