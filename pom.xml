@@ -6,7 +6,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.Chalwk</groupId>
+    <groupId>com.github.chalwk</groupId>
     <artifactId>SAPPDiscordBot</artifactId>
     <version>1.0.3</version>
     <packaging>jar</packaging>
