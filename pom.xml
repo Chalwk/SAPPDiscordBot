@@ -5,9 +5,8 @@
                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>com.github.chalwk</groupId>
-    <artifactId>SAPPDiscordBot</artifactId>
+    <artifactId>sappdiscordbot</artifactId>
     <version>1.0.4</version>
     <packaging>jar</packaging>
 
@@ -112,12 +111,12 @@
                                 <runtimeBits>64</runtimeBits>
                             </jre>
                             <versionInfo>
-                                <fileVersion>1.0.3.0</fileVersion>
-                                <txtFileVersion>1.0.3.0</txtFileVersion>
+                                <fileVersion>1.0.4.0</fileVersion>
+                                <txtFileVersion>1.0.4.0</txtFileVersion>
                                 <fileDescription>SAPP Discord Bot</fileDescription>
                                 <copyright>2025 Jericho Crosby (Chalwk)</copyright>
-                                <productVersion>1.0.3.0</productVersion>
-                                <txtProductVersion>1.0.3.0</txtProductVersion>
+                                <productVersion>1.0.4.0</productVersion>
+                                <txtProductVersion>1.0.4.0</txtProductVersion>
                                 <productName>SAPP Discord Bot</productName>
                                 <companyName>JeriCraft</companyName>
                                 <internalName>SAPPDiscordBot</internalName>

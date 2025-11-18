@@ -1,4 +1,3 @@
-# Build and Publish SAPP Discord Bot
 name: Build and Publish SAPP Discord Bot
 
 on:
@@ -21,6 +20,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Set up JDK 17 and configure Maven server for GitHub Packages.
       - name: Set up JDK 17 and configure Maven server for GitHub Packages
         uses: actions/setup-java@v4
         with:
@@ -28,7 +28,7 @@ jobs:
           distribution: 'temurin'
           server-id: github
           server-username: ${{ github.actor }}
-          server-password: ${{ secrets.GITHUB_TOKEN }}
+          server-password: ${{ secrets.GH_PACKAGES_PAT || secrets.GITHUB_TOKEN }}
 
       - name: Cache Maven dependencies
         uses: actions/cache@v3
@@ -45,20 +45,20 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sapp-discord-bot-jar
-          path: target/SAPPDiscordBot-*.jar
+          path: target/sappdiscordbot-*.jar
           retention-days: 30
 
       - name: Upload EXE artifact
         uses: actions/upload-artifact@v4
         with:
           name: sapp-discord-bot-exe
-          path: target/SAPPDiscordBot-*.exe
+          path: target/sappdiscordbot-*.exe
           retention-days: 30
 
       - name: Publish to GitHub Packages
         shell: pwsh
         run: |
-          Write-Host "Using default settings.xml (actions/setup-java configured server-id=github)"
+          Write-Host "Using configured server-id=github (setup-java). Deploying to GitHub Packages..."
           mvn -B deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -88,8 +88,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ./artifacts/SAPPDiscordBot-*.jar
-            ./artifacts/SAPPDiscordBot-*.exe
+            ./artifacts/sappdiscordbot-*.jar
+            ./artifacts/sappdiscordbot-*.exe
           body: |
             # SAPP Discord Bot ${{ github.event.release.tag_name }}
             
@@ -97,10 +97,8 @@ jobs:
             
             ## 📦 Files Included
             
-            - **`SAPPDiscordBot-*.jar`** - Java JAR file (cross-platform - runs on Windows, Linux, macOS)
-            - **`SAPPDiscordBot-*.exe`** - Windows executable (self-contained)
-            
-            ## See the [README](https://github.com/Chalwk/SAPPDiscordBot?tab=readme-ov-file#sappdiscordbot) for full details.
+            - **`sappdiscordbot-*.jar`** - Java JAR file (cross-platform - runs on Windows, Linux, macOS)
+            - **`sappdiscordbot-*.exe`** - Windows executable (self-contained)
           draft: false
           prerelease: false
           generate_release_notes: true
@@ -132,4 +130,4 @@ jobs:
 
       - name: Verify JAR works on Linux
         run: |
-          java -jar target/SAPPDiscordBot-*.jar --version || echo "JAR executed successfully"
+          java -jar target/sappdiscordbot-*.jar --version || echo "JAR executed successfully"
