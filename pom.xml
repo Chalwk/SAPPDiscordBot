@@ -12,13 +12,12 @@
 
     <name>SAPP Discord Bot</name>
     <description>Advanced Halo server event monitoring and Discord integration</description>
-    <url>https://github.com/${github.repository}</url>
+    <url>https://github.com/Chalwk/SAPPDiscordBot</url>
 
     <properties>
-        <maven.compiler.source>14</maven.compiler.source>
-        <maven.compiler.target>14</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <github.repository>Chalwk/SAPPDiscordBot</github.repository>
     </properties>
 
     <dependencies>
@@ -112,12 +111,12 @@
                                 <runtimeBits>64/32</runtimeBits>
                             </jre>
                             <versionInfo>
-                                <fileVersion>1.0.1.0</fileVersion>
-                                <txtFileVersion>1.0.1.0</txtFileVersion>
+                                <fileVersion>1.0.2.0</fileVersion>
+                                <txtFileVersion>1.0.2.0</txtFileVersion>
                                 <fileDescription>SAPP Discord Bot</fileDescription>
                                 <copyright>2025 Jericho Crosby (Chalwk)</copyright>
-                                <productVersion>1.0.1.0</productVersion>
-                                <txtProductVersion>1.0.1.0</txtProductVersion>
+                                <productVersion>1.0.2.0</productVersion>
+                                <txtProductVersion>1.0.2.0</txtProductVersion>
                                 <productName>SAPP Discord Bot</productName>
                                 <companyName>JeriCraft</companyName>
                                 <internalName>SAPPDiscordBot</internalName>
@@ -157,8 +156,8 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/${github.repository}.git</connection>
-        <developerConnection>scm:git:ssh://github.com/${github.repository}.git</developerConnection>
-        <url>https://github.com/${github.repository}</url>
+        <connection>scm:git:git://github.com/Chalwk/SAPPDiscordBot.git</connection>
+        <developerConnection>scm:git:ssh://github.com/Chalwk/SAPPDiscordBot.git</developerConnection>
+        <url>https://github.com/Chalwk/SAPPDiscordBot</url>
     </scm>
 </project>
