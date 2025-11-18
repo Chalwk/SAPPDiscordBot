@@ -13,7 +13,7 @@ Please upgrade to the latest 1.0.x release for security patches and improvements
 
 Security is important. To report a vulnerability:
 
-1. **Contact Method:** Send a detailed report to **security@chalwk.com** or a private message
+1. **Contact Method:** Send a detailed report to **jericho.crosby227@gmail.com** or a private message
    on [HSP Discord](https://discord.gg/D76H7RVPC9).
 2. **Information to Include:**
     - Bot version (check the top of your README.md or `sapp_bot_config.json`)
