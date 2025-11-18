@@ -146,7 +146,7 @@ jobs:
           prerelease: false
           generate_release_notes: true
 
-  # Optional: Add a Linux build test to ensure cross-platform compatibility
+  # Add a Linux build test to ensure cross-platform compatibility
   linux-test-build:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'  # Only run on push events, not releases
