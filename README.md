@@ -105,6 +105,8 @@ directory as the
 application. This file contains the configuration for the bot, including the Discord Bot Token, watch directory, and
 server configurations.
 
+# ⚠️ Warning: Never share the Discord Bot Token with anyone!
+
 ---
 
 ## License
