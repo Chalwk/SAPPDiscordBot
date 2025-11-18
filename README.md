@@ -25,19 +25,21 @@ the [discord.lua](https://github.com/Chalwk/SAPPDiscordBot/releases/latest/downl
 sends rich notifications to Discord. It supports **multiple servers**, offers a **GUI** for configuration, and is
 optimized for performance.
 
+> ⚠️ **Note:** This application requires GUI access to the host machine. It will **not** run in headless environments
+> such as servers without a graphical interface.
+
 ---
 
 ## System Requirements
 
 - Must have Java 17 installed.
     - For Windows users, you can
-      download [Java 17 here](https://www.oracle.com/java/technologies/downloads/#jdk17-windows).
-    - For Linux users, run this command in your terminal: `sudo apt install openjdk-17-jre-headless`
-
-* 512MB RAM
-* 50MB storage
-* Windows or Linux
-* Halo server running SAPP
+      download [Java 17 here](https://www.oracle.com/java/technologies/downloads/#jdk17-windows)
+    - For Linux users, use **non-headless JRE**: `sudo apt install openjdk-17-jre`
+- 512MB RAM
+- 50MB storage
+- Windows or Linux with GUI access
+- Halo server running SAPP
 
 ---
 
