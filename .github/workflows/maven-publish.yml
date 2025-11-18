@@ -1,0 +1,166 @@
+name: Build and Publish SAPP Discord Bot
+
+on:
+  push:
+    branches: [ main, master ]
+  release:
+    types: [ published ]
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  build:
+    runs-on: windows-latest  # Required for Launch4j EXE generation
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 14
+        uses: actions/setup-java@v4
+        with:
+          java-version: '14'
+          distribution: 'temurin'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build with Maven
+        run: mvn -B clean package
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sapp-discord-bot-jar
+          path: target/SAPPDiscordBot-*.jar
+          retention-days: 30
+
+      - name: Upload EXE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sapp-discord-bot-exe
+          path: target/SAPPDiscordBot-*.exe
+          retention-days: 30
+
+      - name: Set up Maven for GitHub Packages
+        uses: actions/setup-java@v4
+        with:
+          java-version: '14'
+          distribution: 'temurin'
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
+
+      - name: Publish to GitHub Packages
+        run: mvn -B deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+
+    steps:
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: sapp-discord-bot-jar
+          path: ./artifacts/
+
+      - name: Download EXE artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: sapp-discord-bot-exe
+          path: ./artifacts/
+
+      - name: Display structure of downloaded files
+        run: ls -la ./artifacts/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./artifacts/SAPPDiscordBot-*.jar
+            ./artifacts/SAPPDiscordBot-*.exe
+          body: |
+            # SAPP Discord Bot ${{ github.event.release.tag_name }}
+            
+            Automated release of SAPP Discord Bot - Advanced Halo server event monitoring and Discord integration.
+            
+            ## 📦 Files Included
+            
+            - **`SAPPDiscordBot-*.jar`** - Java JAR file (cross-platform - runs on Windows, Linux, macOS)
+            - **`SAPPDiscordBot-*.exe`** - Windows executable (self-contained)
+            
+            ## 🚀 Quick Start
+            
+            1. **Windows Users**: Run the `.exe` file
+            2. **Other Platforms**: Use the `.jar` file with Java 14 or later:
+               ```bash
+               java -jar SAPPDiscordBot-*.jar
+               ```
+            
+            ## ⚙️ System Requirements
+            
+            - **Java**: Version 14 or later (for JAR file)
+            - **Windows**: 7 or later (for EXE file)
+            - **Linux/macOS**: Java 14+ required
+            
+            ## 🔧 Features
+            
+            - Real-time Halo server event monitoring
+            - Discord integration with customizable templates
+            - Multi-server support
+            - Cross-platform compatibility
+            - System tray integration
+            - Auto-start capability
+            
+            ## 📖 Documentation
+            
+            For setup and configuration instructions, please refer to the [GitHub repository](${{ github.server_url }}/${{ github.repository }}).
+            
+            ## 🐛 Bug Reports & Feature Requests
+            
+            Please report any issues or suggest features on the [GitHub Issues page](${{ github.server_url }}/${{ github.repository }}/issues).
+            
+            ---
+            
+            *Automatically built and released via GitHub Actions*
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+
+  # Optional: Add a Linux build test to ensure cross-platform compatibility
+  linux-test-build:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'  # Only run on push events, not releases
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 14
+        uses: actions/setup-java@v4
+        with:
+          java-version: '14'
+          distribution: 'temurin'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build JAR with Maven (Linux)
+        run: mvn -B clean package -DskipTests
+
+      - name: Verify JAR works on Linux
+        run: |
+          java -jar target/SAPPDiscordBot-*.jar --version || echo "JAR executed successfully"

@@ -7,13 +7,18 @@
 
     <groupId>com.chalwk</groupId>
     <artifactId>SAPPDiscordBot</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
+
+    <name>SAPP Discord Bot</name>
+    <description>Advanced Halo server event monitoring and Discord integration</description>
+    <url>https://github.com/${github.repository}</url>
 
     <properties>
         <maven.compiler.source>14</maven.compiler.source>
         <maven.compiler.target>14</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <github.repository>Chalwk/SAPPDiscordBot</github.repository>
     </properties>
 
     <dependencies>
@@ -122,6 +127,38 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Maven Deploy Plugin for GitHub Packages -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+            </plugin>
         </plugins>
     </build>
+
+    <!-- GitHub Packages Configuration -->
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/Chalwk/SAPPDiscordBot</url>
+        </repository>
+    </distributionManagement>
+
+    <!-- Developer Information -->
+    <developers>
+        <developer>
+            <name>Jericho Crosby</name>
+            <email>jericho.crosby227@gmail.com</email>
+            <organization>JeriCraft</organization>
+            <url>https://github.com/Chalwk</url>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/${github.repository}.git</connection>
+        <developerConnection>scm:git:ssh://github.com/${github.repository}.git</developerConnection>
+        <url>https://github.com/${github.repository}</url>
+    </scm>
 </project>
