@@ -1,3 +1,4 @@
+# Build and Publish SAPP Discord Bot
 name: Build and Publish SAPP Discord Bot
 
 on:
@@ -5,11 +6,16 @@ on:
     branches: [ main, master ]
   release:
     types: [ published ]
-  workflow_dispatch:  # Allow manual triggering
+  workflow_dispatch:
+
+# Grant the workflow permission to write packages (required to publish to GitHub Packages)
+permissions:
+  contents: read
+  packages: write
 
 jobs:
   build:
-    runs-on: windows-latest  # Required for Launch4j EXE generation
+    runs-on: windows-latest
 
     steps:
       - name: Checkout code
@@ -67,7 +73,9 @@ jobs:
           "@ | Out-File -FilePath $settingsPath -Encoding UTF8
 
       - name: Publish to GitHub Packages
-        run: mvn -B deploy
+        # ensure shell expands $HOME consistently
+        shell: bash
+        run: mvn -B -s "$HOME/.m2/settings.xml" deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -107,49 +115,13 @@ jobs:
             
             - **`SAPPDiscordBot-*.jar`** - Java JAR file (cross-platform - runs on Windows, Linux, macOS)
             - **`SAPPDiscordBot-*.exe`** - Windows executable (self-contained)
-            
-            ## 🚀 Quick Start
-            
-            1. **Windows Users**: Run the `.exe` file
-            2. **Other Platforms**: Use the `.jar` file with Java 17 or later:
-               ```bash
-               java -jar SAPPDiscordBot-*.jar
-               ```
-            
-            ## ⚙️ System Requirements
-            
-            - **Java**: Version 17 or later (for JAR file)
-            - **Windows**: 7 or later (for EXE file)
-            - **Linux/macOS**: Java 17+ required
-            
-            ## 🔧 Features
-            
-            - Real-time Halo server event monitoring
-            - Discord integration with customizable templates
-            - Multi-server support
-            - Cross-platform compatibility
-            - System tray integration
-            - Auto-start capability
-            
-            ## 📖 Documentation
-            
-            For setup and configuration instructions, please refer to the [GitHub repository](https://github.com/Chalwk/SAPPDiscordBot).
-            
-            ## 🐛 Bug Reports & Feature Requests
-            
-            Please report any issues or suggest features on the [GitHub Issues page](https://github.com/Chalwk/SAPPDiscordBot/issues).
-            
-            ---
-            
-            *Automatically built and released via GitHub Actions*
           draft: false
           prerelease: false
           generate_release_notes: true
 
-  # Linux build test to ensure cross-platform compatibility
   linux-test-build:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'  # Only run on push events, not releases
+    if: github.event_name == 'push'
 
     steps:
       - name: Checkout code
