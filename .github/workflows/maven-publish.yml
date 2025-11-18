@@ -47,9 +47,15 @@ jobs:
           retention-days: 30
 
       - name: Configure Maven settings for GitHub Packages
+        shell: pwsh
         run: |
-          mkdir -p $HOME/.m2
-          echo "<settings>
+          $m2 = Join-Path $HOME ".m2"
+          if (-not (Test-Path $m2)) {
+            New-Item -ItemType Directory -Path $m2 | Out-Null
+          }
+          $settingsPath = Join-Path $m2 "settings.xml"
+          @"
+          <settings>
             <servers>
               <server>
                 <id>github</id>
@@ -57,7 +63,8 @@ jobs:
                 <password>${{ secrets.GITHUB_TOKEN }}</password>
               </server>
             </servers>
-          </settings>" > $HOME/.m2/settings.xml
+          </settings>
+          "@ | Out-File -FilePath $settingsPath -Encoding UTF8
 
       - name: Publish to GitHub Packages
         run: mvn -B deploy
