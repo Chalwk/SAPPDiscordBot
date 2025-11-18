@@ -57,7 +57,7 @@ Follow these steps:
 - Click the **Bot** tab on the left-hand side menu.
   Set the bot's username and profile picture.
 - Click **Reset Token** and then **Yes, do it!**.
-    - **Save this token**, you will need it later. **Warning: Never share this token with anyone!**
+    - **Save this token**, you will need it later.
     - Scroll down to **Privileged Gateway Intents**.
     - Enable **Presence Intent**, **Server Members Intent** and **Message Content Intent**.
 - Click the **OAuth2** tab on the left-hand side menu.
@@ -69,6 +69,8 @@ Follow these steps:
     - Click **Authorize**.
     - Complete the captcha and click **Authorize**.
     - The bot should now be on your Discord server. Ensure the bot has the correct permissions.
+
+### ⚠️ Warning: Never share the Discord Bot Token with anyone!
 
 **4.** Create a new folder in your Halo server's root directory called `discord_events`.
 
@@ -101,11 +103,8 @@ Follow these steps:
 ## Technical Notes:
 
 The `SAPPDiscordBot.exe / SAPPDiscordBot.jar` application will create a file called `sapp_bot_config.json` in the same
-directory as the
-application. This file contains the configuration for the bot, including the Discord Bot Token, watch directory, and
-server configurations.
-
-# ⚠️ Warning: Never share the Discord Bot Token with anyone!
+directory as the application. This file contains the configuration for the bot, including the Discord Bot Token, watch
+directory, and server configurations.
 
 ---
 
