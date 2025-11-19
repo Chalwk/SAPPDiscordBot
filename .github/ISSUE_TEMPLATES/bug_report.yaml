@@ -1,0 +1,105 @@
+name: "🐛 Bug Report"
+description: "Report a bug or unexpected behavior"
+title: "[Bug]: "
+labels: [ "bug", "triage" ]
+assignees: [ ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please provide as much detail as possible to help us resolve the issue.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Bug Description"
+      description: "A clear and concise description of what the bug is."
+      placeholder: "When I perform X action, Y happens instead of Z..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Steps to Reproduce"
+      description: "Step-by-step instructions to reproduce the behavior"
+      placeholder: |
+        1. Start the bot with '...'
+        2. Configure server '....'
+        3. Trigger event '....'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Expected Behavior"
+      description: "What you expected to happen"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: "Actual Behavior"
+      description: "What actually happened"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: "Affected Component"
+      description: "Which part of the application is affected?"
+      multiple: true
+      options:
+        - "GUI / Interface"
+        - "Discord Bot Connection"
+        - "File Watching / Event Processing"
+        - "Event Templates"
+        - "Configuration Management"
+        - "Build / Packaging"
+        - "Other"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Relevant Log Output"
+      description: "Please copy and paste any relevant log output from the application or Discord"
+      render: shell
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: "Operating System"
+      options:
+        - "Windows 10"
+        - "Windows 11"
+        - "Linux (Ubuntu/Debian)"
+        - "Linux (Other)"
+        - "Other"
+    validations:
+      required: true
+
+  - type: input
+    id: java
+    attributes:
+      label: "Java Version"
+      description: "Output of `java -version`"
+      placeholder: "java version \"17.0.9\" 2023-10-17 LTS"
+
+  - type: input
+    id: version
+    attributes:
+      label: "Bot Version"
+      description: "Version of SAPPDiscordBot you're using"
+      placeholder: "1.0.3"
+
+  - type: textarea
+    id: context
+    attributes:
+      label: "Additional Context"
+      description: "Add any other context about the problem here (screenshots, configuration details, etc.)"

@@ -43,6 +43,23 @@ optimized for performance.
 
 ---
 
+## Issues and Feature Requests
+
+Found a bug or have a feature idea? Please check our issue templates:
+
+- [**Report a Bug**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=bug_report.yaml) - For reporting
+  problems or unexpected behavior
+- [**Request a Feature**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=feature_request.yaml) - For
+  suggesting new features or enhancements
+
+Before creating a new issue, please:
+
+1. Check if the issue already exists in our [issues list](https://github.com/Chalwk/SAPPDiscordBot/issues)
+2. For bugs, include your Java version, operating system, and relevant log output
+3. For features, describe your use case and proposed solution
+
+---
+
 ### Download and Installation
 
 **1.** Download the [latest release](https://github.com/Chalwk/SAPPDiscordBot/releases) from the repository

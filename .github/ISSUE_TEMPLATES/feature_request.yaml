@@ -1,0 +1,69 @@
+name: "🚀 Feature Request"
+description: "Suggest an idea or enhancement for this project"
+title: "[Feature]: "
+labels: [ "enhancement" ]
+assignees: [ ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please provide detailed information about what you'd like to see added.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "Problem Statement"
+      description: "Is your feature request related to a problem? Please describe."
+      placeholder: "I'm always frustrated when..."
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: "Proposed Solution"
+      description: "A clear and concise description of what you want to happen."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "Alternative Solutions"
+      description: "A clear and concise description of any alternative solutions or features you've considered."
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: "Feature Area"
+      description: "Which part of the application would this feature affect?"
+      options:
+        - "Event Processing"
+        - "Discord Integration"
+        - "GUI / User Interface"
+        - "Configuration System"
+        - "New Event Types"
+        - "Template System"
+        - "Performance"
+        - "Other"
+    validations:
+      required: true
+
+  - type: textarea
+    id: usecase
+    attributes:
+      label: "Use Case"
+      description: "Describe a specific scenario where this feature would be useful"
+      placeholder: "As a server admin, I want to..."
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: "Implementation Notes"
+      description: "Any technical details, mockups, or implementation ideas you have"
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: "Willingness to Contribute"
+      description: "Would you be interested in helping implement this feature?"
+      options:
+        - label: "I would be willing to submit a PR to implement this feature"
