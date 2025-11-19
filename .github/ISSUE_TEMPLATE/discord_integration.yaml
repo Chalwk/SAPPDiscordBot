@@ -1,7 +1,7 @@
 name: "🤖 Discord Integration Issue"
 description: "Report problems with Discord bot functionality"
 title: "[Discord]: "
-labels: [ "bug" ]
+labels: ["discord", "integration"]
 assignees: [ ]
 body:
   - type: markdown
