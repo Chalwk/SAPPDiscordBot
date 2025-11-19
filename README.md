@@ -4,6 +4,8 @@
 ![License](https://img.shields.io/badge/License-MIT-blue.svg)
 ![SAPPDiscordBot](https://img.shields.io/github/v/release/Chalwk/SAPPDiscordBot?color=blue&label=Version&cacheSeconds=0)
 
+[![Discord](https://img.shields.io/badge/Discord-Join_Our_Server-7289DA?style=for-the-badge&logo=discord)](https://discord.gg/D76H7RVPC9)
+
 A Java application that uses the [JDA API](https://github.com/discord-jda/JDA) to connect Halo SAPP server events to
 Discord, providing real-time alerts, structured embeds, and a GUI interface for monitoring your servers.
 
@@ -47,13 +49,14 @@ optimized for performance.
 
 Found a bug or have a feature idea? Please check our issue templates:
 
-- [**Report a Bug**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=bug_report.yaml) - For reporting
-  problems or unexpected behavior
-- [**Request a Feature**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=feature_request.yaml) - For
-  suggesting new features or enhancements
+- [**Report a Bug**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=bug_report.yaml) - For reporting problems or unexpected behavior
+- [**Request a Feature**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=feature_request.yaml) - For suggesting new features or enhancements
+- [**Documentation Update**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=documentation.yaml) - For documentation improvements
+- [**New Event Request**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=event_request.yaml) - For requesting new Halo event types
+- [**Performance Issue**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=performance.yaml) - For performance-related problems
+- [**Discord Integration**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=discord_integration.yaml) - For Discord bot-specific issues
 
 Before creating a new issue, please:
-
 1. Check if the issue already exists in our [issues list](https://github.com/Chalwk/SAPPDiscordBot/issues)
 2. For bugs, include your Java version, operating system, and relevant log output
 3. For features, describe your use case and proposed solution

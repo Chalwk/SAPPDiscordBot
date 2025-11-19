@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Documentation
+    url: https://github.com/Chalwk/SAPPDiscordBot#readme
+    about: Check the README for setup instructions and FAQs
+  - name: 💬 Discussions
+    url: https://github.com/Chalwk/SAPPDiscordBot/discussions
+    about: Ask questions and share ideas in our community discussions
+  - name: ❓ Discord Support
+    url: https://discord.gg/D76H7RVPC9
+    about: Get real-time help from the community (if you have a Discord server)

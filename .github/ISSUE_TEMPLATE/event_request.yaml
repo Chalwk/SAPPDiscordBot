@@ -1,0 +1,49 @@
+name: "🎯 New Event Request"
+description: "Request support for a new Halo server event type"
+title: "[Event]: "
+labels: [ "enhancement" ]
+assignees: [ ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Request a new event type to be monitored from your Halo server.
+
+  - type: textarea
+    id: event_description
+    attributes:
+      label: "Event Description"
+      description: "Describe the event you'd like to see supported"
+      placeholder: "I'd like the bot to detect when a player picks up a specific weapon..."
+    validations:
+      required: true
+
+  - type: input
+    id: event_name
+    attributes:
+      label: "Suggested Event Name"
+      description: "What should this event be called?"
+      placeholder: "event_weapon_pickup"
+
+  - type: textarea
+    id: data_fields
+    attributes:
+      label: "Expected Data Fields"
+      description: "What information would this event include?"
+      placeholder: |
+        - player_name
+        - weapon_type
+        - timestamp
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: "Use Case"
+      description: "How would you use this event in your server?"
+      placeholder: "I want to track when players pick up power weapons..."
+
+  - type: textarea
+    id: lua_implementation
+    attributes:
+      label: "Lua Implementation Notes"
+      description: "Any details about how this could be implemented in the discord.lua script"

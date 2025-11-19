@@ -1,0 +1,64 @@
+name: "🤖 Discord Integration Issue"
+description: "Report problems with Discord bot functionality"
+title: "[Discord]: "
+labels: [ "bug" ]
+assignees: [ ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Report issues specifically related to Discord bot functionality.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Issue Description"
+      description: "Describe the Discord-related problem"
+      placeholder: "The bot fails to send messages to specific channels..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: issue_type
+    attributes:
+      label: "Issue Type"
+      options:
+        - "Bot Connection"
+        - "Message Sending"
+        - "Embed Display"
+        - "Channel Permissions"
+        - "Rate Limiting"
+        - "Other"
+    validations:
+      required: true
+
+  - type: textarea
+    id: error_message
+    attributes:
+      label: "Error Message/Logs"
+      description: "Any error messages or relevant log output"
+      render: shell
+
+  - type: input
+    id: jda_version
+    attributes:
+      label: "JDA Version"
+      description: "What version of JDA is being used? (check pom.xml)"
+      placeholder: "5.6.1"
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Steps to Reproduce"
+      description: "How to reproduce the Discord integration issue"
+
+  - type: checkboxes
+    id: permissions
+    attributes:
+      label: "Bot Permissions Check"
+      description: "Confirm the bot has these permissions in Discord"
+      options:
+        - label: "Bot has Administrator permission or required specific permissions"
+        - label: "Presence Intent is enabled in Discord Developer Portal"
+        - label: "Server Members Intent is enabled in Discord Developer Portal"
+        - label: "Message Content Intent is enabled in Discord Developer Portal"

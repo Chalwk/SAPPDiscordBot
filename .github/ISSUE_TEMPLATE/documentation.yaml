@@ -1,0 +1,39 @@
+name: "📚 Documentation Update"
+description: "Suggest improvements or report issues with documentation"
+title: "[Docs]: "
+labels: [ "documentation" ]
+assignees: [ ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please describe what needs to be updated.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Documentation Issue"
+      description: "What part of the documentation needs improvement? Please be specific."
+      placeholder: "The installation instructions for Linux are missing..."
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: "Document Location"
+      description: "Where is this documentation located? (e.g., README.md, specific section, etc.)"
+      placeholder: "README.md - Installation section"
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: "Suggested Improvement"
+      description: "How would you improve this documentation?"
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: "Willingness to Contribute"
+      options:
+        - label: "I'm willing to submit a PR to fix this documentation issue"

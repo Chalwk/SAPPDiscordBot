@@ -1,0 +1,64 @@
+name: "⚡ Performance Issue"
+description: "Report performance problems or resource usage concerns"
+title: "[Performance]: "
+labels: [ "performance" ]
+assignees: [ ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Report any performance issues, high resource usage, or slow response times.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Performance Issue Description"
+      description: "Describe the performance problem you're experiencing"
+      placeholder: "The bot uses high CPU when monitoring multiple servers..."
+    validations:
+      required: true
+
+  - type: input
+    id: cpu_usage
+    attributes:
+      label: "CPU Usage"
+      description: "What CPU usage are you seeing? (if known)"
+      placeholder: "Consistently above 50%"
+
+  - type: input
+    id: memory_usage
+    attributes:
+      label: "Memory Usage"
+      description: "What memory usage are you seeing? (if known)"
+      placeholder: "~200MB RAM"
+
+  - type: input
+    id: server_count
+    attributes:
+      label: "Number of Servers Monitored"
+      description: "How many Halo servers are you monitoring?"
+      placeholder: "3"
+
+  - type: input
+    id: event_volume
+    attributes:
+      label: "Event Volume"
+      description: "Approximately how many events per minute?"
+      placeholder: "~50 events/minute"
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: "Operating System"
+      options:
+        - "Windows 10"
+        - "Windows 11"
+        - "Linux (Ubuntu/Debian)"
+        - "Linux (Other)"
+        - "Other"
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: "Steps to Reproduce Performance Issue"
+      description: "How can we reproduce this performance problem?"
