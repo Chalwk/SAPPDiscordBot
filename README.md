@@ -140,8 +140,7 @@ directory, and server configurations.
 
 **SAPPDiscordBot** is released under the [MIT License](LICENSE).
 
-> For licensing inquiries, collaboration proposals, or to report usage concerns,<br>
-> please contact Jericho Crosby (Chalwk):
+> For licensing inquiries, collaboration proposals, or to report usage concerns, contact me:
 > 
 > Email (preferred): `chalwk.dev@gmail.com`<br>
 > Discord: (**chalwk**)
