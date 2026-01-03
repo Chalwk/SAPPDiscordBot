@@ -1,3 +1,9 @@
+/**
+ * SAPPDiscordBot
+ * Copyright (c) 2025-2026. Jericho Crosby (Chalwk)
+ * MIT License
+ */
+
 package com.chalwk.file;
 
 import com.chalwk.config.ConfigManager;
@@ -17,7 +23,6 @@ public class FileWatcher {
 
     private static final Logger logger = LoggerFactory.getLogger(FileWatcher.class);
 
-    // Default maximum file size (10MB)
     private static final long DEFAULT_MAX_FILE_SIZE = 10 * 1024 * 1024;
 
     private final ConfigManager configManager;
@@ -54,7 +59,6 @@ public class FileWatcher {
             return;
         }
 
-        // Create directory if it doesn't exist
         if (!directory.exists()) {
             if (directory.mkdirs()) {
                 logger.info("Created watch directory: {}", watchDir);
@@ -64,7 +68,6 @@ public class FileWatcher {
             }
         }
 
-        // Clear all existing text files to remove residual events
         clearExistingTextFiles(directory);
 
         int pollInterval = configManager.getConfig().getPollInterval();
@@ -78,17 +81,10 @@ public class FileWatcher {
         logger.info("Maximum file size: {} bytes ({} MB)", getMaxFileSize(), getMaxFileSize() / (1024 * 1024));
     }
 
-    /**
-     * Gets the maximum file size from config or uses default
-     */
     private long getMaxFileSize() {
         return DEFAULT_MAX_FILE_SIZE;
     }
 
-    /**
-     * Clears all existing text files in the watch directory to remove residual events
-     * from previous runs before starting the bot.
-     */
     private void clearExistingTextFiles(File directory) {
         try {
             File[] textFiles = directory.listFiles((dir, name) -> name.endsWith(".txt"));
@@ -115,9 +111,6 @@ public class FileWatcher {
         }
     }
 
-    /**
-     * Clears the content of a file by overwriting it with an empty string.
-     */
     private boolean clearFileContent(File file) {
         try (FileWriter writer = new FileWriter(file, false)) {
             writer.write("");
@@ -166,12 +159,10 @@ public class FileWatcher {
             long lastModified = file.lastModified();
             long fileSize = file.length();
 
-            // Check if file is too large and clear it if needed
             if (fileSize > getMaxFileSize()) {
                 logger.warn("File {} is too large ({} bytes > {} bytes). Clearing content.",
                         file.getName(), fileSize, getMaxFileSize());
                 if (clearFileContent(file)) {
-                    // Remove the file state so it will be treated as a new file
                     fileStates.remove(filePath);
                     logger.info("Successfully cleared oversized file: {}", file.getName());
                 } else {
@@ -182,7 +173,6 @@ public class FileWatcher {
 
             FileState state = fileStates.get(filePath);
 
-            // If file is new or modified, process it
             if (state == null || lastModified > state.lastModified || fileSize != state.fileSize) {
                 if (state == null) {
                     state = new FileState();
@@ -207,26 +197,18 @@ public class FileWatcher {
         try {
             List<RawEvent> eventsToProcess = parseRawTextEvents(file, state);
 
-            // No events to process
             if (eventsToProcess.isEmpty()) return;
 
-            // Extract server name from filename (remove .txt extension)
             String serverName = file.getName().replace(".txt", "");
 
-            // Ensure server channels exist in config
             configManager.getConfig().ensureServerChannels(serverName);
 
-            // Process events
             for (RawEvent event : eventsToProcess) {
                 String eventHash = generateEventHash(event);
 
-                // Process the raw event with server name
                 eventProcessor.processRawEvent(event, discordBot, serverName);
-
-                // Mark as successfully processed
                 state.processedEventHashes.add(eventHash);
 
-                // Notify UI with server name
                 if (eventListener != null) {
                     eventListener.onEventProcessed(event, serverName);
                 }
@@ -259,7 +241,6 @@ public class FileWatcher {
                     if (event != null) {
                         String eventHash = generateEventHash(event);
 
-                        // Check if we've already processed this event
                         if (!state.processedEventHashes.contains(eventHash)) {
                             events.add(event);
                             state.processedEventHashes.add(eventHash);
@@ -280,7 +261,6 @@ public class FileWatcher {
     }
 
     private RawEvent parseEventLine(String line) {
-        // Format: event_type|key1=value1|key2=value2|timestamp=123456789
         String[] parts = line.split("\\|");
 
         if (parts.length < 1) return null;
@@ -288,7 +268,6 @@ public class FileWatcher {
         RawEvent event = new RawEvent();
         Map<String, Object> data = new HashMap<>();
 
-        // First part is always the event type
         event.setEvent_type(parts[0]);
 
         for (int i = 1; i < parts.length; i++) {
@@ -338,9 +317,7 @@ public class FileWatcher {
             }
             content.append(event.getTimestamp()).append(":");
 
-            // Include relevant data fields in the hash
             if (event.getData() != null) {
-                // For different event types, use different identifying fields
                 switch (event.getEvent_type()) {
                     case "event_join":
                     case "event_leave":
@@ -376,18 +353,15 @@ public class FileWatcher {
                         }
                         break;
                     default:
-                        // For other events, include all data for uniqueness
                         for (Map.Entry<String, Object> entry : event.getData().entrySet()) {
                             content.append(entry.getKey()).append(":").append(entry.getValue()).append(":");
                         }
                 }
             }
 
-            // Use consistent hash
             return Integer.toHexString(content.toString().hashCode());
 
         } catch (Exception e) {
-            // Fallback to UUID with event type for basic uniqueness
             return event.getEvent_type() + "_" + UUID.randomUUID().toString().substring(0, 8);
         }
     }
@@ -396,7 +370,6 @@ public class FileWatcher {
         void onEventProcessed(RawEvent event, String serverName);
     }
 
-    // Track state for each file
     private static class FileState {
         long lastModified;
         long fileSize;

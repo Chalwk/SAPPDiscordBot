@@ -1,3 +1,9 @@
+/**
+ * SAPPDiscordBot
+ * Copyright (c) 2025-2026. Jericho Crosby (Chalwk)
+ * MIT License
+ */
+
 package com.chalwk.gui;
 
 import org.jetbrains.annotations.NotNull;
@@ -66,17 +72,13 @@ public class TrayManager {
     }
 
     private Image createTrayImage() {
-        // Try multiple approaches to load the icon for cross-platform compatibility (windows/linux)
         try {
-            // Approach 1: Load from classpath
             Image image = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icon.png"));
             if (image != null) return image;
 
-            // Approach 2: Load from file system
             image = Toolkit.getDefaultToolkit().getImage("icon.png");
             if (image != null) return image;
 
-            // Approach 3: Create a simple generated icon as fallback
             return createFallbackIcon();
 
         } catch (Exception e) {

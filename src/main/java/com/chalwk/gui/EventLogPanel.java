@@ -1,3 +1,9 @@
+/**
+ * SAPPDiscordBot
+ * Copyright (c) 2025-2026. Jericho Crosby (Chalwk)
+ * MIT License
+ */
+
 package com.chalwk.gui;
 
 import com.chalwk.model.RawEvent;
@@ -23,11 +29,9 @@ public class EventLogPanel extends JPanel {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Table model and table
         tableModel = new EventTableModel();
         eventTable = new JTable(tableModel);
 
-        // Table styling
         eventTable.setFillsViewportHeight(true);
         eventTable.setRowHeight(25);
         eventTable.setShowGrid(true);
@@ -36,7 +40,6 @@ public class EventLogPanel extends JPanel {
         eventTable.setSelectionForeground(Color.BLACK);
         eventTable.setFont(eventTable.getFont().deriveFont(12f));
 
-        // Header styling
         eventTable.getTableHeader().setFont(eventTable.getFont().deriveFont(Font.BOLD));
         eventTable.getTableHeader().setBackground(new Color(70, 130, 180));
         eventTable.getTableHeader().setForeground(Color.BLACK);
@@ -52,7 +55,6 @@ public class EventLogPanel extends JPanel {
         ));
         scrollPane.setPreferredSize(new Dimension(800, 400));
 
-        // Control panel
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         controlPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 10, 0));
 
@@ -111,10 +113,8 @@ public class EventLogPanel extends JPanel {
             this.subtype = event.getSubtype();
             this.status = status;
 
-            // Build content from event data
             this.content = buildContentFromData(event.getData());
 
-            // Truncate long content for display
             if (this.content.length() > 100) {
                 this.content = this.content.substring(0, 97) + "...";
             }
@@ -127,12 +127,11 @@ public class EventLogPanel extends JPanel {
 
             StringBuilder sb = new StringBuilder();
             for (Map.Entry<String, Object> entry : data.entrySet()) {
-                if (sb.length() > 0) {
+                if (!sb.isEmpty()) {
                     sb.append(", ");
                 }
                 sb.append(entry.getKey()).append(": ").append(entry.getValue());
 
-                // Limit the total length
                 if (sb.length() > 80) {
                     sb.append("...");
                     break;
@@ -152,7 +151,6 @@ public class EventLogPanel extends JPanel {
                 c.setBackground(row % 2 == 0 ? Color.WHITE : new Color(248, 248, 248));
             }
 
-            // Color code status column
             if (column == 5 && value != null) {
                 String status = value.toString().toLowerCase();
                 if (status.contains("success") || status.contains("processed")) {

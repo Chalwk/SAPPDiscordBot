@@ -49,14 +49,21 @@ optimized for performance.
 
 Found a bug or have a feature idea? Please check our issue templates:
 
-- [**Report a Bug**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=bug_report.yaml) - For reporting problems or unexpected behavior
-- [**Request a Feature**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=feature_request.yaml) - For suggesting new features or enhancements
-- [**Documentation Update**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=documentation.yaml) - For documentation improvements
-- [**New Event Request**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=event_request.yaml) - For requesting new Halo event types
-- [**Performance Issue**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=performance.yaml) - For performance-related problems
-- [**Discord Integration**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=discord_integration.yaml) - For Discord bot-specific issues
+- [**Report a Bug**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=bug_report.yaml) - For reporting
+  problems or unexpected behavior
+- [**Request a Feature**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=feature_request.yaml) - For
+  suggesting new features or enhancements
+- [**Documentation Update**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=documentation.yaml) - For
+  documentation improvements
+- [**New Event Request**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=event_request.yaml) - For
+  requesting new Halo event types
+- [**Performance Issue**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=performance.yaml) - For
+  performance-related problems
+- [**Discord Integration**](https://github.com/Chalwk/SAPPDiscordBot/issues/new?template=discord_integration.yaml) - For
+  Discord bot-specific issues
 
 Before creating a new issue, please:
+
 1. Check if the issue already exists in our [issues list](https://github.com/Chalwk/SAPPDiscordBot/issues)
 2. For bugs, include your Java version, operating system, and relevant log output
 3. For features, describe your use case and proposed solution
@@ -131,8 +138,6 @@ directory, and server configurations.
 
 ## License
 
-### [MIT License](https://github.com/Chalwk/SAPPDiscordBot/blob/main/LICENSE)
-
-© 2025 SAPPDiscordBot. Jericho Crosby (Chalwk). All rights reserved.
+**SAPPDiscordBot** is released under the [MIT License](LICENSE).
 
 ---

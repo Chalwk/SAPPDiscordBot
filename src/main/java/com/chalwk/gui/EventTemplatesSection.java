@@ -1,3 +1,9 @@
+/**
+ * SAPPDiscordBot
+ * Copyright (c) 2025-2026. Jericho Crosby (Chalwk)
+ * MIT License
+ */
+
 package com.chalwk.gui;
 
 import com.chalwk.config.AppConfig;
@@ -19,11 +25,9 @@ public class EventTemplatesSection extends JPanel {
     public EventTemplatesSection(String serverName, ConfigManager configManager) {
         this.serverName = serverName;
 
-        // Use server-specific configs if available, otherwise use global configs as base
         Map<String, EventConfig> baseConfigs = configManager.getConfig().getEventConfigs();
         Map<String, EventConfig> workingConfigs = new HashMap<>();
 
-        // Copy the base configs to working configs
         for (Map.Entry<String, EventConfig> entry : baseConfigs.entrySet()) {
             workingConfigs.put(entry.getKey(), new EventConfig(
                     entry.getValue().isEnabled(),
@@ -34,7 +38,6 @@ public class EventTemplatesSection extends JPanel {
             ));
         }
 
-        // If we have server-specific configs, apply them over the base
         if (!"Global".equals(serverName)) {
             Map<String, EventConfig> serverConfigs = configManager.getConfig().getEventConfigsForServer(serverName);
             if (serverConfigs != null && serverConfigs != baseConfigs) {
@@ -47,12 +50,6 @@ public class EventTemplatesSection extends JPanel {
         initializeUI();
     }
 
-    // Add getter method for table model
-    public EventTemplateTableModel getTableModel() {
-        return tableModel;
-    }
-
-    // Add getter method for event configs
     public Map<String, EventConfig> getEventConfigs() {
         return tableModel.getEventConfigs();
     }
@@ -61,22 +58,19 @@ public class EventTemplatesSection extends JPanel {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createTitledBorder("Event Templates for " + serverName));
 
-        // Table setup
         eventTable.setRowHeight(25);
         eventTable.getTableHeader().setReorderingAllowed(false);
 
-        // Set column widths
-        eventTable.getColumnModel().getColumn(0).setPreferredWidth(60);  // Enabled
-        eventTable.getColumnModel().getColumn(1).setPreferredWidth(150); // Event Type
-        eventTable.getColumnModel().getColumn(2).setPreferredWidth(300); // Template
-        eventTable.getColumnModel().getColumn(3).setPreferredWidth(80);  // Color
-        eventTable.getColumnModel().getColumn(4).setPreferredWidth(80);  // Use Embed
-        eventTable.getColumnModel().getColumn(5).setPreferredWidth(100); // Channel
+        eventTable.getColumnModel().getColumn(0).setPreferredWidth(60);
+        eventTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+        eventTable.getColumnModel().getColumn(2).setPreferredWidth(300);
+        eventTable.getColumnModel().getColumn(3).setPreferredWidth(80);
+        eventTable.getColumnModel().getColumn(4).setPreferredWidth(80);
+        eventTable.getColumnModel().getColumn(5).setPreferredWidth(100);
 
         JScrollPane scrollPane = new JScrollPane(eventTable);
         scrollPane.setPreferredSize(new Dimension(800, 400));
 
-        // Control buttons
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         JButton resetButton = new JButton("Reset to Defaults");
@@ -103,8 +97,7 @@ public class EventTemplatesSection extends JPanel {
         }
     }
 
-    // Table model for event templates
-    private static class EventTemplateTableModel extends AbstractTableModel {
+    public static class EventTemplateTableModel extends AbstractTableModel {
         private final String[] columnNames = {
                 "Enabled", "Event Type", "Template", "Color", "Use Embed", "Channel"
         };
@@ -121,7 +114,6 @@ public class EventTemplatesSection extends JPanel {
             this.eventKeys = eventConfigs.keySet().toArray(new String[0]);
         }
 
-        // Add getter for eventConfigs
         public Map<String, EventConfig> getEventConfigs() {
             return eventConfigs;
         }
@@ -144,14 +136,14 @@ public class EventTemplatesSection extends JPanel {
         @Override
         public Class<?> getColumnClass(int columnIndex) {
             return switch (columnIndex) {
-                case 0, 4 -> Boolean.class; // Enabled, Use Embed
+                case 0, 4 -> Boolean.class;
                 default -> String.class;
             };
         }
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            return true; // All cells are editable
+            return true;
         }
 
         @Override
@@ -185,13 +177,11 @@ public class EventTemplatesSection extends JPanel {
 
             fireTableCellUpdated(rowIndex, columnIndex);
 
-            // Auto-save server-specific configurations
             if (!"Global".equals(serverName)) {
                 configManager.getConfig().setEventConfigsForServer(serverName, eventConfigs);
                 try {
                     configManager.saveConfig(configManager.getConfig());
                 } catch (Exception e) {
-                    // Log error but don't show dialog to avoid spamming user during typing
                     System.err.println("Error auto-saving configuration: " + e.getMessage());
                 }
             }
@@ -205,7 +195,6 @@ public class EventTemplatesSection extends JPanel {
         }
 
         public void resetToDefaults() {
-            // Create a new default config to get default values
             AppConfig defaultConfig = new AppConfig();
             Map<String, EventConfig> defaults = defaultConfig.getEventConfigs();
 
@@ -223,7 +212,6 @@ public class EventTemplatesSection extends JPanel {
 
             fireTableDataChanged();
 
-            // Auto-save after reset
             if (!"Global".equals(serverName)) {
                 configManager.getConfig().setEventConfigsForServer(serverName, eventConfigs);
                 try {

@@ -1,3 +1,9 @@
+/**
+ * SAPPDiscordBot
+ * Copyright (c) 2025-2026. Jericho Crosby (Chalwk)
+ * MIT License
+ */
+
 package com.chalwk.discord;
 
 import java.util.Map;
@@ -25,7 +31,6 @@ public class TemplateProcessor {
     private static String getReplacement(String placeholder, Map<String, Object> data) {
         Object value = data.get(placeholder);
         if (value == null) {
-            // Try common variations
             value = switch (placeholder) {
                 case "gt" -> data.get("gametype");
                 case "killerName" -> data.get("killer_name");

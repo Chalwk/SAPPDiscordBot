@@ -1,3 +1,9 @@
+/**
+ * SAPPDiscordBot
+ * Copyright (c) 2025-2026. Jericho Crosby (Chalwk)
+ * MIT License
+ */
+
 package com.chalwk.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,7 +46,6 @@ public class ConfigManager {
                 config = objectMapper.readValue(configFile, AppConfig.class);
                 logger.info("Configuration loaded from {}", CONFIG_FILE);
 
-                // Ensure backward compatibility - if serverEventConfigs is null, initialize it
                 if (config.getServerEventConfigs() == null) {
                     config.setServerEventConfigs(new HashMap<>());
                 }

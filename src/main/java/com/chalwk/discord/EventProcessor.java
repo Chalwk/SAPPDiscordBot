@@ -1,3 +1,9 @@
+/**
+ * SAPPDiscordBot
+ * Copyright (c) 2025-2026. Jericho Crosby (Chalwk)
+ * MIT License
+ */
+
 package com.chalwk.discord;
 
 import com.chalwk.config.ConfigManager;
@@ -42,7 +48,6 @@ public class EventProcessor {
             return;
         }
 
-        // Get channel ID with server-specific fallback logic
         String channelType = eventConfig.getChannelId();
         String channelId = getChannelIdForServer(serverName, channelType);
 
@@ -51,7 +56,6 @@ public class EventProcessor {
             return;
         }
 
-        // Process template with event data
         String processedContent = TemplateProcessor.processTemplate(
                 eventConfig.getTemplate(),
                 rawEvent.getData()
@@ -63,18 +67,15 @@ public class EventProcessor {
             discordBot.sendMessage(channelId, processedContent);
         }
 
-        // Notify UI
         if (eventListener != null) {
             eventListener.onEventProcessed(rawEvent, serverName);
         }
     }
 
     private String getChannelIdForServer(String serverName, String channelType) {
-        // First try server-specific channel
         String serverChannelKey = serverName + "_" + channelType;
         String channelId = configManager.getConfig().getChannels().get(serverChannelKey);
 
-        // If server-specific channel not configured, fall back to global channel
         if (channelId == null || channelId.trim().isEmpty()) {
             channelId = configManager.getConfig().getChannels().get(channelType);
         }
@@ -87,7 +88,6 @@ public class EventProcessor {
         builder.setDescription(description);
         builder.setTimestamp(Instant.now());
 
-        // Set color
         Color color = getColorFromName(colorName);
         if (color != null) {
             builder.setColor(color);
@@ -116,6 +116,6 @@ public class EventProcessor {
     }
 
     public interface EventListener {
-        void onEventProcessed(RawEvent event, String serverName);  // Changed to accept serverName
+        void onEventProcessed(RawEvent event, String serverName);
     }
 }

@@ -1,3 +1,9 @@
+/**
+ * SAPPDiscordBot
+ * Copyright (c) 2025-2026. Jericho Crosby (Chalwk)
+ * MIT License
+ */
+
 package com.chalwk;
 
 import com.chalwk.config.ConfigManager;
@@ -28,10 +34,8 @@ public class SAPPDiscordBot {
             logger.warn("Could not set system look and feel", e);
         }
 
-        // Initialize configuration
         configManager = new ConfigManager();
 
-        // Start GUI in Event Dispatch Thread
         SwingUtilities.invokeLater(() -> {
             mainFrame = new MainFrame(configManager);
             trayManager = new TrayManager(mainFrame);
@@ -49,17 +53,14 @@ public class SAPPDiscordBot {
                 return;
             }
 
-            // Initialize Discord bot
             discordBot = new DiscordBot(configManager);
             if (!discordBot.start()) {
                 JOptionPane.showMessageDialog(mainFrame, "Failed to start Discord bot. Check your token and configuration.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Initialize event processor
             eventProcessor = new EventProcessor(configManager);
 
-            // Initialize file watcher with UI listener that includes server name
             fileWatcher = new FileWatcher(configManager, discordBot, eventProcessor);
             fileWatcher.setEventListener((event, serverName) -> mainFrame.addEventLog(event, serverName, "Processed"));
             fileWatcher.startWatching();

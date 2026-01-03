@@ -1,3 +1,9 @@
+/**
+ * SAPPDiscordBot
+ * Copyright (c) 2025-2026. Jericho Crosby (Chalwk)
+ * MIT License
+ */
+
 package com.chalwk.gui;
 
 import com.chalwk.config.AppConfig;
@@ -39,7 +45,6 @@ public class ConfigPanel extends JPanel {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Discord Token Section
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 1;
@@ -52,7 +57,6 @@ public class ConfigPanel extends JPanel {
         discordTokenField = new JPasswordField(40);
         mainPanel.add(discordTokenField, gbc);
 
-        // Token checkbox
         gbc.gridy = 1;
         gbc.gridx = 1;
         gbc.gridwidth = 2;
@@ -60,7 +64,6 @@ public class ConfigPanel extends JPanel {
         showTokenCheckbox.addActionListener(e -> toggleTokenVisibility());
         mainPanel.add(showTokenCheckbox, gbc);
 
-        // Token help text
         gbc.gridy = 2;
         gbc.insets = new Insets(2, 8, 8, 8);
         JLabel tokenHelp = new JLabel("<html><i>Get this from Discord Developer Portal → Your Bot → Token</i></html>");
@@ -68,11 +71,10 @@ public class ConfigPanel extends JPanel {
         tokenHelp.setFont(tokenHelp.getFont().deriveFont(10f));
         mainPanel.add(tokenHelp, gbc);
 
-        // Watch Directory Section
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.gridwidth = 1;
-        gbc.insets = new Insets(8, 8, 8, 8); // reset to default
+        gbc.insets = new Insets(8, 8, 8, 8);
         JLabel watchDirLabel = new JLabel("Watch Directory:");
         watchDirLabel.setFont(watchDirLabel.getFont().deriveFont(Font.BOLD));
         mainPanel.add(watchDirLabel, gbc);
@@ -89,7 +91,6 @@ public class ConfigPanel extends JPanel {
         browseButton.addActionListener(e -> browseDirectory());
         mainPanel.add(browseButton, gbc);
 
-        // Watch directory help text
         gbc.gridx = 1;
         gbc.gridy = 4;
         gbc.gridwidth = 2;
@@ -99,11 +100,10 @@ public class ConfigPanel extends JPanel {
         watchDirHelp.setFont(watchDirHelp.getFont().deriveFont(10f));
         mainPanel.add(watchDirHelp, gbc);
 
-        // Poll Interval Section
         gbc.gridx = 0;
         gbc.gridy = 5;
         gbc.gridwidth = 1;
-        gbc.insets = new Insets(8, 8, 8, 8); // reset
+        gbc.insets = new Insets(8, 8, 8, 8);
         JLabel pollLabel = new JLabel("Poll Interval (ms):");
         pollLabel.setFont(pollLabel.getFont().deriveFont(Font.BOLD));
         mainPanel.add(pollLabel, gbc);
@@ -113,7 +113,6 @@ public class ConfigPanel extends JPanel {
         pollIntervalSpinner = new JSpinner(new SpinnerNumberModel(1000, 100, 10000, 100));
         mainPanel.add(pollIntervalSpinner, gbc);
 
-        // Poll interval help text
         gbc.gridy = 6;
         gbc.insets = new Insets(2, 8, 8, 8);
         JLabel pollHelp = new JLabel("<html><i>How often to check for new events (lower = faster detection, higher = less CPU usage)</i></html>");
@@ -121,16 +120,14 @@ public class ConfigPanel extends JPanel {
         pollHelp.setFont(pollHelp.getFont().deriveFont(10f));
         mainPanel.add(pollHelp, gbc);
 
-        // Auto Start
         gbc.gridx = 0;
         gbc.gridy = 7;
         gbc.gridwidth = 3;
-        gbc.insets = new Insets(8, 8, 8, 8); // reset
+        gbc.insets = new Insets(8, 8, 8, 8);
         autoStartCheckbox = new JCheckBox("Start bot automatically on application launch");
         autoStartCheckbox.setFont(autoStartCheckbox.getFont().deriveFont(Font.BOLD));
         mainPanel.add(autoStartCheckbox, gbc);
 
-        // Buttons Panel
         gbc.gridx = 0;
         gbc.gridy = 8;
         gbc.gridwidth = 3;
@@ -179,7 +176,6 @@ public class ConfigPanel extends JPanel {
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setDialogTitle("Select Watch Directory");
 
-        // Start from current watch directory if it exists
         String currentDir = watchDirectoryField.getText();
         if (currentDir != null && !currentDir.trim().isEmpty()) {
             chooser.setCurrentDirectory(new File(currentDir));
@@ -231,7 +227,6 @@ public class ConfigPanel extends JPanel {
             try {
                 AppConfig config = configManager.getConfig();
 
-                // Only reset bot configuration settings, preserve output configuration
                 config.setDiscordToken("");
                 config.setWatchDirectory("./discord_events");
                 config.setPollInterval(1000);

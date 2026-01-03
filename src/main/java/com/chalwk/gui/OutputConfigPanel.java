@@ -1,3 +1,9 @@
+/**
+ * SAPPDiscordBot
+ * Copyright (c) 2025-2026. Jericho Crosby (Chalwk)
+ * MIT License
+ */
+
 package com.chalwk.gui;
 
 import com.chalwk.config.AppConfig;
@@ -17,7 +23,6 @@ public class OutputConfigPanel extends JPanel {
     private JTabbedPane configTabs;
     private JComboBox<String> serverSelector;
 
-    // Global channel fields
     private JTextField globalGeneralField;
     private JTextField globalChatField;
     private JTextField globalCommandField;
@@ -33,23 +38,17 @@ public class OutputConfigPanel extends JPanel {
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // Server management panel
         JPanel serverManagementPanel = createServerManagementPanel();
 
-        // Configuration tabs
         configTabs = new JTabbedPane();
-
-        // Global channels tab (for default/fallback)
         configTabs.addTab("Global Configuration", createGlobalConfigPanel());
 
-        // Buttons Panel
         JPanel buttonPanel = createButtonPanel();
 
         add(serverManagementPanel, BorderLayout.NORTH);
         add(configTabs, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Force initial layout validation
         SwingUtilities.invokeLater(() -> {
             revalidate();
             repaint();
@@ -82,10 +81,8 @@ public class OutputConfigPanel extends JPanel {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // Global channels configuration
         JPanel channelsPanel = createGlobalChannelsPanel();
 
-        // Global event templates
         JPanel templatesPanel = new EventTemplatesSection("Global", configManager);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, channelsPanel, templatesPanel);
@@ -121,14 +118,12 @@ public class OutputConfigPanel extends JPanel {
         JTextField[] fields = new JTextField[3];
 
         for (int i = 0; i < channelLabels.length; i++) {
-            // Label
             gbc.gridy = i * 2 + 1;
             gbc.gridx = 0;
             gbc.gridwidth = 1;
             gbc.weightx = 0.0;
             panel.add(new JLabel(channelLabels[i]), gbc);
 
-            // Text field
             gbc.gridx = 1;
             gbc.gridwidth = 2;
             gbc.weightx = 1.0;
@@ -136,7 +131,6 @@ public class OutputConfigPanel extends JPanel {
             fields[i].setPreferredSize(new Dimension(200, 25));
             panel.add(fields[i], gbc);
 
-            // Help text
             gbc.gridy = i * 2 + 2;
             gbc.gridx = 1;
             gbc.gridwidth = 2;
@@ -150,12 +144,10 @@ public class OutputConfigPanel extends JPanel {
             gbc.weightx = 0.0;
         }
 
-        // Store references to fields
         globalGeneralField = fields[0];
         globalChatField = fields[1];
         globalCommandField = fields[2];
 
-        // Add filler to push components to top
         gbc.gridy = channelLabels.length * 2 + 1;
         gbc.gridx = 0;
         gbc.gridwidth = 3;
@@ -201,12 +193,10 @@ public class OutputConfigPanel extends JPanel {
     private void loadConfig() {
         AppConfig config = configManager.getConfig();
 
-        // Load global channels
         globalGeneralField.setText(config.getChannels().get("GENERAL"));
         globalChatField.setText(config.getChannels().get("CHAT"));
         globalCommandField.setText(config.getChannels().get("COMMAND"));
 
-        // Find all server-specific channels and create tabs for them
         for (String key : config.getChannels().keySet()) {
             if (key.contains("_")) {
                 String[] parts = key.split("_");
@@ -230,7 +220,6 @@ public class OutputConfigPanel extends JPanel {
 
         updateServerSelector();
 
-        // Force layout update after loading config
         SwingUtilities.invokeLater(() -> {
             revalidate();
             repaint();
@@ -241,12 +230,10 @@ public class OutputConfigPanel extends JPanel {
         try {
             AppConfig config = configManager.getConfig();
 
-            // Save global channels
             config.getChannels().put("GENERAL", globalGeneralField.getText().trim());
             config.getChannels().put("CHAT", globalChatField.getText().trim());
             config.getChannels().put("COMMAND", globalCommandField.getText().trim());
 
-            // Save server-specific channels AND event templates
             for (Map.Entry<String, ServerConfigPanel> entry : serverPanels.entrySet()) {
                 String serverName = entry.getKey();
                 ServerConfigPanel panel = entry.getValue();
@@ -255,7 +242,6 @@ public class OutputConfigPanel extends JPanel {
                 config.getChannels().put(serverName + "_CHAT", panel.getChatField().getText().trim());
                 config.getChannels().put(serverName + "_COMMAND", panel.getCommandField().getText().trim());
 
-                // Save server-specific event templates
                 panel.saveEventTemplates();
             }
 
@@ -275,7 +261,6 @@ public class OutputConfigPanel extends JPanel {
                 updateServerSelector();
                 serverSelector.setSelectedItem(serverName);
 
-                // Force layout update after adding server
                 SwingUtilities.invokeLater(() -> {
                     revalidate();
                     repaint();
@@ -297,7 +282,6 @@ public class OutputConfigPanel extends JPanel {
                 removeServerTab(selectedServer);
                 updateServerSelector();
 
-                // Force layout update after removing server
                 SwingUtilities.invokeLater(() -> {
                     revalidate();
                     repaint();
@@ -311,7 +295,6 @@ public class OutputConfigPanel extends JPanel {
         configTabs.addTab(serverName, panel);
         serverPanels.put(serverName, panel);
 
-        // Ensure server channels exist in config
         configManager.getConfig().ensureServerChannels(serverName);
     }
 
@@ -320,13 +303,11 @@ public class OutputConfigPanel extends JPanel {
         if (panel != null) {
             configTabs.remove(panel);
 
-            // Remove server channels from config
             AppConfig config = configManager.getConfig();
             config.getChannels().remove(serverName + "_GENERAL");
             config.getChannels().remove(serverName + "_CHAT");
             config.getChannels().remove(serverName + "_COMMAND");
 
-            // Remove server-specific event templates
             config.getServerEventConfigs().remove(serverName);
         }
     }
@@ -367,15 +348,10 @@ public class OutputConfigPanel extends JPanel {
                 AppConfig config = configManager.getConfig();
                 AppConfig defaultConfig = new AppConfig();
 
-                // Reset channels to defaults
                 config.getChannels().clear();
                 config.getChannels().putAll(defaultConfig.getChannels());
-
-                // Reset event configurations to defaults
                 config.getEventConfigs().clear();
                 config.getEventConfigs().putAll(defaultConfig.getEventConfigs());
-
-                // Reset server-specific event configurations
                 config.getServerEventConfigs().clear();
 
                 configManager.saveConfig(config);
@@ -395,7 +371,6 @@ public class OutputConfigPanel extends JPanel {
         }
     }
 
-    // Server-specific configuration panel
     private static class ServerConfigPanel extends JPanel {
         private final String serverName;
         private final ConfigManager configManager;
@@ -414,26 +389,21 @@ public class OutputConfigPanel extends JPanel {
             setLayout(new BorderLayout());
             setBorder(new EmptyBorder(10, 10, 10, 10));
 
-            // Server header
             JLabel headerLabel = new JLabel("<html><b>Server: " + serverName + "</b><br>" +
                     "Configure Discord channels and event templates specifically for this Halo server.</html>");
             headerLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
             add(headerLabel, BorderLayout.NORTH);
 
-            // Create channels panel
             JPanel channelsPanel = createChannelsPanel();
 
-            // Create event templates section
             templatesSection = new EventTemplatesSection(serverName, configManager);
 
-            // Use split pane to divide channels and templates
             JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, channelsPanel, templatesSection);
             splitPane.setResizeWeight(0.3);
             splitPane.setDividerLocation(150);
 
             add(splitPane, BorderLayout.CENTER);
 
-            // Force initial layout validation
             SwingUtilities.invokeLater(() -> {
                 revalidate();
                 repaint();
@@ -459,14 +429,12 @@ public class OutputConfigPanel extends JPanel {
             JTextField[] fields = new JTextField[3];
 
             for (int i = 0; i < channelLabels.length; i++) {
-                // Label
                 gbc.gridy = i * 2;
                 gbc.gridx = 0;
                 gbc.gridwidth = 1;
                 gbc.weightx = 0.0;
                 panel.add(new JLabel(channelLabels[i]), gbc);
 
-                // Text field
                 gbc.gridx = 1;
                 gbc.gridwidth = 2;
                 gbc.weightx = 1.0;
@@ -474,7 +442,6 @@ public class OutputConfigPanel extends JPanel {
                 fields[i].setPreferredSize(new Dimension(200, 25));
                 panel.add(fields[i], gbc);
 
-                // Help text
                 gbc.gridy = i * 2 + 1;
                 gbc.gridx = 1;
                 gbc.gridwidth = 2;
@@ -488,12 +455,10 @@ public class OutputConfigPanel extends JPanel {
                 gbc.weightx = 0.0;
             }
 
-            // Store references
             generalField = fields[0];
             chatField = fields[1];
             commandField = fields[2];
 
-            // Add filler to push components to top
             gbc.gridy = channelLabels.length * 2;
             gbc.gridx = 0;
             gbc.gridwidth = 3;
@@ -505,14 +470,11 @@ public class OutputConfigPanel extends JPanel {
         }
 
         public void saveEventTemplates() {
-            // For server-specific configurations, save to serverEventConfigs
             if (!"Global".equals(serverName)) {
                 Map<String, EventConfig> serverConfigs = new HashMap<>();
 
-                // Copy all the current configurations for this server
                 for (Map.Entry<String, EventConfig> entry : templatesSection.getEventConfigs().entrySet()) {
                     EventConfig original = entry.getValue();
-                    // Create a new instance to avoid reference issues
                     serverConfigs.put(entry.getKey(), new EventConfig(
                             original.isEnabled(),
                             original.getTemplate(),
@@ -522,15 +484,12 @@ public class OutputConfigPanel extends JPanel {
                     ));
                 }
 
-                // Save to server-specific configs
                 configManager.getConfig().setEventConfigsForServer(serverName, serverConfigs);
             } else {
-                // For global, update the main eventConfigs
                 templatesSection.saveToConfig(configManager.getConfig().getEventConfigs());
             }
         }
 
-        // Getters
         public JTextField getGeneralField() {
             return generalField;
         }

@@ -1,3 +1,9 @@
+/**
+ * SAPPDiscordBot
+ * Copyright (c) 2025-2026. Jericho Crosby (Chalwk)
+ * MIT License
+ */
+
 package com.chalwk.gui;
 
 import com.chalwk.SAPPDiscordBot;
@@ -72,23 +78,17 @@ public class MainFrame extends JFrame {
     private void createMainPanel() {
         tabbedPane = new JTabbedPane();
 
-        // Configuration tab
         configPanel = new ConfigPanel(configManager);
         tabbedPane.addTab("Bot Configuration", configPanel);
 
-        // Output Configuration tab
         OutputConfigPanel outputConfigPanel = new OutputConfigPanel(configManager);
         tabbedPane.addTab("Output Configuration", outputConfigPanel);
 
-        // Event Log tab
         eventLogPanel = new EventLogPanel();
         tabbedPane.addTab("Event Log", eventLogPanel);
 
-        // Status and controls panel
         JPanel controlPanel = createControlPanel();
 
-        // Main layout
-        setLayout(new BorderLayout());
         add(controlPanel, BorderLayout.NORTH);
         add(tabbedPane, BorderLayout.CENTER);
     }
@@ -97,14 +97,12 @@ public class MainFrame extends JFrame {
         JPanel controlPanel = new JPanel(new BorderLayout());
         controlPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Status panel
         JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         statusLabel = new JLabel("Status: Stopped");
         statusLabel.setForeground(Color.RED);
         statusLabel.setFont(new Font("Arial", Font.BOLD, 14));
         statusPanel.add(statusLabel);
 
-        // Control buttons
         JPanel buttonPanel = new JPanel(new FlowLayout());
         startButton = new JButton("Start Bot");
         stopButton = new JButton("Stop Bot");
@@ -176,7 +174,7 @@ public class MainFrame extends JFrame {
 
     private void showAboutDialog() {
         String version = MainFrame.class.getPackage().getImplementationVersion();
-        if (version == null) version = "Unknown"; // fallback just in case
+        if (version == null) version = "Unknown";
 
         JOptionPane.showMessageDialog(this,
                 "SAPP Discord Bot v" + version + "\n\n" +

@@ -1,3 +1,9 @@
+/**
+ * SAPPDiscordBot
+ * Copyright (c) 2025-2026. Jericho Crosby (Chalwk)
+ * MIT License
+ */
+
 package com.chalwk.config;
 
 import java.util.HashMap;
@@ -116,36 +122,30 @@ public class AppConfig {
         ));
     }
 
-    // Getters and setters
     public Map<String, String> getChannels() {
         return channels;
     }
-
     public Map<String, EventConfig> getEventConfigs() {
         return eventConfigs;
     }
 
-    // Get event configs for a specific server (falls back to global if server-specific doesn't exist)
     public Map<String, EventConfig> getEventConfigsForServer(String serverName) {
         if (serverName != null && serverEventConfigs.containsKey(serverName)) {
             return serverEventConfigs.get(serverName);
         }
-        return eventConfigs; // Fall back to global configs
+        return eventConfigs;
     }
 
-    // Set event configs for a specific server
     public void setEventConfigsForServer(String serverName, Map<String, EventConfig> configs) {
         if (serverName != null) {
             serverEventConfigs.put(serverName, configs);
         }
     }
 
-    // Get all server-specific configs
     public Map<String, Map<String, EventConfig>> getServerEventConfigs() {
         return serverEventConfigs;
     }
 
-    // Set all server-specific configs
     public void setServerEventConfigs(Map<String, Map<String, EventConfig>> serverEventConfigs) {
         this.serverEventConfigs.clear();
         if (serverEventConfigs != null) {

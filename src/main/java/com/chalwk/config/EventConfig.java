@@ -1,3 +1,9 @@
+/**
+ * SAPPDiscordBot
+ * Copyright (c) 2025-2026. Jericho Crosby (Chalwk)
+ * MIT License
+ */
+
 package com.chalwk.config;
 
 public class EventConfig {
@@ -18,7 +24,6 @@ public class EventConfig {
         this.channelId = channelId;
     }
 
-    // Getters and setters
     public boolean isEnabled() {
         return enabled;
     }
